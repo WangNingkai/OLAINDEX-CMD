@@ -90,26 +90,15 @@ class Tool
     /**
      * 解析路径
      * @param $path
-     * @param bool $isQuery
      * @param bool $isFile
      * @return string
      */
-    public static function convertPath($path, $isQuery = true, $isFile = false)
+    public static function getRequestPath($path, $isFile = false)
     {
-        $origin_path = trim($path, '/');
-        $path_array = explode('/', $origin_path);
-        $base = ['home', 'view', 'show', 'download'];
-        if (in_array($path_array[0], $base)) {
-            unset($path_array[0]);
-            $query_path = implode('/', $path_array);
-        } else $query_path = $origin_path;
-        if (!$isQuery) return $query_path;
+        $origin_path = self::getAbsolutePath($path);
+        $query_path = trim($origin_path, '/');
         $query_path = Tool::handleUrl(rawurldecode($query_path));
-        $root = trim(self::handleUrl(self::config('root')), '/');
-        if ($query_path)
-            $request_path = empty($root) ? ":/{$query_path}:/" : ":/{$root}/{$query_path}:/";
-        else
-            $request_path = empty($root) ? '/' : ":/{$root}:/";
+        $request_path = empty($query_path) ? '/' : ":/{$query_path}:/";
         if ($isFile)
             return rtrim($request_path, ':/');
         return $request_path;
