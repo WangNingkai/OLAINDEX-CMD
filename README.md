@@ -30,6 +30,42 @@ OLAINDEX-CMD is a console version of OLAINDEX.
 - Based on PHP,Easy installation.
 - Local Configuration file (/storage/app/config.json).
 
+## Usage
+
+```bash
+OLAINDEX-CMD
+
+  USAGE: olaindex <command> [options] [arguments]
+
+  account       Account Info
+  cp            Copy Item
+  direct        Create Direct Share Link
+  download      Download Item
+  find          Find Item
+  install       Install App
+  login         Account Login
+  logout        Account Logout
+  ls            List Items
+  mkdir         Create A New Folder
+  mv            Move Item
+  quota         OneDrive Info
+  reset         Reset App
+  rm            Delete Item
+  share         Create Download Link
+  test          Command Test
+  upload        Upload File
+  whereis       Find The Item\'s Remote Path
+
+  cache:clear   Flush the application cache
+  cache:forget  Remove an item from the cache
+
+  config:cache  Create a cache file for faster configuration loading
+  config:clear  Remove the configuration cache file
+
+  refresh:token Refresh Token
+
+```
+
 ## Author
 
 Blog : [https://imwnk.cn](https://imwnk.cn)
