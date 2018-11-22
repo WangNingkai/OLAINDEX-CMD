@@ -33,7 +33,7 @@ class OneDrive
             $headers = [];
             $timeout = 5;
         }
-        $baseUrl = Tool::config('app_type') == 'com' ? Constants::REST_ENDPOINT : Constants::REST_ENDPOINT_21V;
+        $baseUrl = Tool::config('app_type') === 'com' ? Constants::REST_ENDPOINT : Constants::REST_ENDPOINT_21V;
         $apiVersion = Constants::API_VERSION;
         if (stripos($endpoint, "http") === 0) {
             $requestUrl = $endpoint;
@@ -156,7 +156,7 @@ class OneDrive
      */
     public static function listChildrenByPath($path = '/')
     {
-        $endpoint = $path == '/' ? "/me/drive/root/children" : "/me/drive/root{$path}children";
+        $endpoint = $path === '/' ? "/me/drive/root/children" : "/me/drive/root{$path}children";
         $response = self::requestApi('get', $endpoint);
         if ($response instanceof Response) {
             $response = json_decode($response->getBody()->getContents(), true);
@@ -235,7 +235,7 @@ class OneDrive
     public static function copy($itemId, $parentItemId)
     {
         $drive = Tool::handleResponse(self::getDrive());
-        if ($drive['code'] == 200) {
+        if ($drive['code'] === 200) {
             $driveId = $drive['data']['id'];
             $endpoint = "/me/drive/items/{$itemId}/copy";
             $body = json_encode([
@@ -305,11 +305,7 @@ class OneDrive
      */
     public static function mkdirByPath($itemName, $path)
     {
-        if ($path == '/')
-            $endpoint = "/me/drive/root/children";
-        else {
-            $endpoint = "/me/drive/root{$path}children";
-        }
+        $endpoint = $path === '/' ? "/me/drive/root/children" : "/me/drive/root{$path}children";
         $body = '{"name":"' . $itemName . '","folder":{},"@microsoft.graph.conflictBehavior":"rename"}';
         $response = self::requestApi('post', [$endpoint, $body]);
         return self::handleResponse($response);
@@ -329,7 +325,7 @@ class OneDrive
         $response = self::requestApi('delete', [$endpoint, '', $headers]);
         if ($response instanceof Response) {
             $statusCode = $response->getStatusCode();
-            if ($statusCode == 204) {
+            if ($statusCode === 204) {
                 return self::response(['deleted' => true]);
             } else {
                 return self::handleResponse($response);
@@ -348,10 +344,7 @@ class OneDrive
      */
     public static function search($path, $query)
     {
-        if (trim($path, '/') == '')
-            $endpoint = "/me/drive/root/search(q='{$query}')";
-        else
-            $endpoint = '/me/drive/root:/' . trim($path, '/') . ':/' . "search(q='{$query}')";
+        $endpoint = $path === '/' ? "/me/drive/root/search(q='{$query}')" : "/me/drive/root{$path}search(q='{$query}')";
         $response = self::requestApi('get', $endpoint);
         if ($response instanceof Response) {
             $response = json_decode($response->getBody()->getContents(), true);
@@ -428,10 +421,10 @@ class OneDrive
     {
         $result = self::listPermission($itemId);
         $response = Tool::handleResponse($result);
-        if ($response['code'] == 200) {
+        if ($response['code'] === 200) {
             $data = $response['data'];
             $permission = array_first($data, function ($value) {
-                return $value['roles'][0] == 'read';
+                return $value['roles'][0] === 'read';
             });
             $permissionId = array_get($permission, 'id');
             return self::deletePermission($itemId, $permissionId);
@@ -653,7 +646,7 @@ class OneDrive
     {
         $result = self::getItem($itemId);
         $response = Tool::handleResponse($result);
-        if ($response['code'] == 200) {
+        if ($response['code'] === 200) {
             $item = $response['data'];
             if (!array_key_exists('path', $item['parentReference']) && $item['name'] == 'root') {
                 return self::response([
@@ -691,7 +684,7 @@ class OneDrive
      */
     public static function pathToItemId($path)
     {
-        $endpoint = $path == '/' ? '/me/drive/root' : '/me/drive/root' . $path;
+        $endpoint = $path === '/' ? '/me/drive/root' : '/me/drive/root' . $path;
         $response = self::requestApi('get', $endpoint);
         if ($response instanceof Response) {
             $response = json_decode($response->getBody()->getContents(), true);

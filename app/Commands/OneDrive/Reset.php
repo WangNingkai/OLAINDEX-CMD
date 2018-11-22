@@ -1,26 +1,25 @@
 <?php
 
-namespace App\Commands;
+namespace App\Commands\OneDrive;
 
-use App\Helpers\Tool;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
-class Logout extends Command
+class Reset extends Command
 {
     /**
      * The signature of the command.
      *
      * @var string
      */
-    protected $signature = 'logout {--f|force : Force Logout}';
+    protected $signature = 'reset {--f|force : Force Reset}';
 
     /**
      * The description of the command.
      *
      * @var string
      */
-    protected $description = 'Account Logout';
+    protected $description = 'Reset App';
 
     /**
      * Execute the console command.
@@ -29,9 +28,12 @@ class Logout extends Command
      */
     public function handle()
     {
-        if ($this->option('force')) return $this->reset();
-        if ($this->confirm('重置账号可能出现无法登录的错误，建议重置应用，确认继续吗?')) {
-            return $this->reset();
+        if ($this->option('force')) {
+           return $this->reset();
+        } else {
+            if ($this->confirm('重置将会抹去全部数据，继续吗？')) {
+                return $this->reset();
+            }
         }
     }
 
@@ -40,16 +42,9 @@ class Logout extends Command
      */
     public function reset()
     {
-        $data = [
-            'access_token' => '',
-            'refresh_token' => '',
-            'access_token_expires' => 0,
-        ];
-        $saved = Tool::updateConfig($data);
-        if ($saved) {
-            $this->call('cache:clear');
-            $this->warn('重置成功，请重新登录!');
-        }
+        $this->call('cache:clear');
+        copy(storage_path('app/config.sample.json'), storage_path('app/config.json'));
+        $this->info('重置完成！');
     }
 
     /**

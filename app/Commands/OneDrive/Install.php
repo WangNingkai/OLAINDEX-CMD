@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Commands;
+namespace App\Commands\OneDrive;
 
 use App\Helpers\Constants;
 use App\Helpers\Tool;
@@ -34,7 +34,7 @@ class Install extends Command
             $client_id = $this->ask('请输入 client_id');
             $client_secret = $this->ask('请输入 client_secret');
             $redirect_uri = Constants::REDIRECT_URI;;
-            $cache_expires = $this->ask('请输入缓存时间');;
+            $cache_expires = $this->ask('请输入缓存时间 (min)');;
             $data = [
                 'app_type' => $app_type,
                 'client_id' => $client_id,
@@ -43,6 +43,7 @@ class Install extends Command
                 'cache_expires' => $cache_expires,
             ];
             $saved = Tool::updateConfig($data);
+            $this->call('cache:clear');
             $saved ? $this->info('配置完成！') : $this->warn('配置失败，请稍后重试！');
         } else {
             $this->warn('已配置完成！');

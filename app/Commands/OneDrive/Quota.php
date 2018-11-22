@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Commands;
+namespace App\Commands\OneDrive;
 
 use App\Helpers\Constants;
 use App\Helpers\OneDrive;

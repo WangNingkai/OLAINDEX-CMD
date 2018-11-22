@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Commands;
+namespace App\Commands\OneDrive;
 
 use App\Helpers\Constants;
 use App\Helpers\Tool;
@@ -9,21 +9,21 @@ use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
-class Login extends Command
+class RefreshToken extends Command
 {
     /**
      * The signature of the command.
      *
      * @var string
      */
-    protected $signature = 'login';
+    protected $signature = 'refresh:token';
 
     /**
      * The description of the command.
      *
      * @var string
      */
-    protected $description = 'Account Login';
+    protected $description = 'Refresh Token';
 
     /**
      * @var string
@@ -76,28 +76,28 @@ class Login extends Command
      */
     public function handle()
     {
-        $values = [
-            'client_id' => $this->client_id,
-            'redirect_uri' => $this->redirect_uri,
-            'scope' => $this->scopes,
-            'response_type' => 'code',
-        ];
-        $query = http_build_query($values, '', '&', PHP_QUERY_RFC3986);
-        $authorizationUrl = $this->authorize_url . "?{$query}";
-        $this->info("请复制此链接到浏览器打开获取 【code】\n{$authorizationUrl}");
-        $code = $this->ask('请输入浏览器获取 【code】');
+        if (!Tool::hasBind() || !Tool::hasConfig()) {
+            $this->error('未绑定账户');
+            exit;
+        }
+        $expires = Tool::config('access_token_expires', 0);
+        $hasExpired = $expires - time() <= 0;
+        if (!$hasExpired) {
+            return;
+        }
+        $existingRefreshToken = Tool::config('refresh_token');
         try {
             $client = new Client();
             $form_params = [
                 'client_id' => $this->client_id,
                 'client_secret' => $this->client_secret,
                 'redirect_uri' => $this->redirect_uri,
-                'code' => $code,
-                'grant_type' => 'authorization_code',
+                'refresh_token' => $existingRefreshToken,
+                'grant_type' => 'refresh_token',
             ];
             if (Tool::config('app_type') == 'cn') $form_params = array_add($form_params, 'resource', Constants::REST_ENDPOINT_21V);
             $response = $client->post($this->access_token_url, [
-                'form_params' => $form_params
+                'form_params' => $form_params,
             ]);
             $token = json_decode($response->getBody()->getContents(), true);
             $access_token = $token['access_token'];
@@ -108,12 +108,12 @@ class Login extends Command
                 'refresh_token' => $refresh_token,
                 'access_token_expires' => $expires
             ];
-            Tool::updateConfig($data);
-            $this->info('登陆成功');
-//            $this->info('Account [' . bind_account() . ']');
+            $saved = Tool::updateConfig($data);
+            $this->call('cache:clear');
+            $saved ? $this->info('Refresh Token Ok!') : $this->warn('Refresh Token Error!');
         } catch (ClientException $e) {
-            $this->warn($e->getMessage());
-            return;
+            $this->error($e->getMessage());
+            exit;
         }
     }
 

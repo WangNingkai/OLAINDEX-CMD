@@ -46,7 +46,7 @@ class Tool
     {
         $file = storage_path('app/config.json');
         if (!is_writable($file)) {
-            abort(403, '权限不足，无法写入配置文件');
+            exit('权限不足，无法写入配置文件');
         };
         $saved = file_put_contents($file, json_encode($config));
         return $saved;
@@ -79,7 +79,7 @@ class Tool
                 copy(storage_path('app/config.sample.json'), storage_path('app/config.json'));
             };
             if (!is_readable($file)) {
-                abort(403, '权限不足，无法预取配置文件');
+                exit('权限不足，无法预取配置文件');
             };
             $config = file_get_contents($file);
             return json_decode($config, true);
@@ -124,42 +124,6 @@ class Tool
             }
         }
         return str_replace('//', '/', '/' . implode('/', $absolutes) . '/');
-    }
-
-    /**
-     * 获取远程文件内容
-     * @param $url
-     * @return mixed
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public static function getFileContent($url)
-    {
-        return self::getFileContentByUrl($url);
-    }
-
-    /**
-     * 获取url文件内容
-     * @param $url
-     * @param bool $cache
-     * @return mixed
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public static function getFileContentByUrl($url, $cache = true)
-    {
-        if ($cache) {
-            return Cache::remember('one:content:' . $url, self::config('expires'), function () use ($url) {
-                try {
-                    $client = new Client();
-                    $response = $client->request('get', $url);
-                    $response = $response->getBody()->getContents();
-                } catch (ClientException $e) {
-                    $response = response()->json(['code' => $e->getCode(), 'msg' => $e->getMessage()]);
-                }
-                return $response ?? '';
-            });
-        } else {
-            return self::getFileContent($url);
-        }
     }
 
     /**
@@ -259,7 +223,7 @@ class Tool
      */
     public static function hasConfig()
     {
-        if (self::config('client_id') === '' || self::config('client_secret') === '' || self::config('redirect_uri') === '') {
+        if (empty(self::config('client_id')) || empty(self::config('client_secret')) || empty(self::config('redirect_uri'))) {
             return false;
         } else return true;
     }
@@ -270,14 +234,14 @@ class Tool
      */
     public static function hasBind()
     {
-        if (self::config('access_token') !== '' && self::config('refresh_token') !== '' && self::config('access_token_expires') !== '') {
+        if (!empty(self::config('access_token')) && !empty(self::config('refresh_token')) && !empty(self::config('access_token_expires'))) {
             return true;
         } else return false;
     }
 
     public static function bindAccount()
     {
-        $response = OneDrive::getDrive();
+//        $response = OneDrive::getDrive();
     }
 
 }
