@@ -695,21 +695,6 @@ class OneDrive
     }
 
     /**
-     * 处理响应
-     * @param $response Response
-     * @return false|string
-     */
-    public static function handleResponse($response)
-    {
-        if (in_array($response->getStatusCode(), [200, 201, 202, 204])) {
-            $data = json_decode($response->getBody()->getContents(), true);
-            return self::response($data);
-        } else {
-            return $response;
-        }
-    }
-
-    /**
      * 文件信息格式化
      * @param $response
      * @param bool $isList
@@ -744,5 +729,25 @@ class OneDrive
             'msg' => $msg,
             'data' => $data
         ]);
+    }
+
+    /**
+     * 处理响应
+     * @param $response Response
+     * @return false|string
+     */
+    public static function handleResponse($response)
+    {
+        if ($response instanceof Response) {
+            if (in_array($response->getStatusCode(), [200, 201, 202, 204])) {
+                $data = json_decode($response->getBody()->getContents(), true);
+                return self::response($data);
+            } else {
+                return $response;
+            }
+        } else {
+            return $response;
+        }
+
     }
 }

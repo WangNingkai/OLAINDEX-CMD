@@ -109,7 +109,7 @@ class RefreshToken extends Command
                 'access_token_expires' => $expires
             ];
             $saved = Tool::updateConfig($data);
-            $this->call('cache:clear');
+            $this->call('cache:clear', ['--quiet' => true]);
             $saved ? $this->info('Refresh Token Ok!') : $this->warn('Refresh Token Error!');
         } catch (ClientException $e) {
             $this->error($e->getMessage());
