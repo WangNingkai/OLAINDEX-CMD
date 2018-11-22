@@ -30,7 +30,7 @@ class Logout extends Command
     public function handle()
     {
         if ($this->option('force')) return $this->logout();
-        if ($this->confirm('重置账号可能出现无法登录的错误，建议重置应用，确认继续吗?')) {
+        if ($this->confirm('Confirm Logout?')) {
             return $this->logout();
         }
     }
@@ -48,7 +48,7 @@ class Logout extends Command
         $saved = Tool::updateConfig($data);
         if ($saved) {
             $this->call('cache:clear');
-            $this->warn('重置成功，请重新登录!');
+            $this->warn('Logout Success!');
         }
     }
 

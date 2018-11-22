@@ -2,41 +2,33 @@
 
 namespace App\Commands\OneDrive;
 
-use App\Helpers\OneDrive;
-use App\Helpers\Tool;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
-class WhereIs extends Command
+class Direct extends Command
 {
     /**
      * The signature of the command.
      *
      * @var string
      */
-    protected $signature = 'whereis {id : Item ID}';
+    protected $signature = 'direct';
 
     /**
      * The description of the command.
      *
      * @var string
      */
-    protected $description = 'Find The Item\'s Remote Path';
+    protected $description = 'Command description';
 
     /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * Execute the console command.
+     *
+     * @return mixed
      */
     public function handle()
     {
-        $this->call('refresh:token');
-        $id = $this->argument('id');
-        $response = Tool::handleResponse(OneDrive::itemIdToPath($id));
-        if ($response['code'] === 200) {
-            $this->info(array_get($response, 'data.path'));
-        } else {
-            $this->error($response['msg']);
-            exit;
-        }
+        //
     }
 
     /**

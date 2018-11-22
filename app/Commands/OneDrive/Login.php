@@ -80,7 +80,7 @@ class Login extends Command
             $this->call('install');
         }
         if (Tool::hasBind()) {
-            $this->error('已绑定账户');
+            $this->error('Already bind account');
             exit;
         }
         $values = [
@@ -91,8 +91,8 @@ class Login extends Command
         ];
         $query = http_build_query($values, '', '&', PHP_QUERY_RFC3986);
         $authorizationUrl = $this->authorize_url . "?{$query}";
-        $this->info("请复制此链接到浏览器打开获取 【code】\n{$authorizationUrl}");
-        $code = $this->ask('请输入浏览器获取 【code】');
+        $this->info("Please copy this link to your browser to open.\n{$authorizationUrl}");
+        $code = $this->ask('Please enter the code obtained by the browser.');
         try {
             $client = new Client();
             $form_params = [
@@ -117,8 +117,7 @@ class Login extends Command
             ];
             Tool::updateConfig($data);
             $this->call('cache:clear');
-            $this->info('登陆成功');
-//            $this->info('Account [' . bind_account() . ']');
+            $this->info('Login Success!');
         } catch (ClientException $e) {
             $this->warn($e->getMessage());
             exit;

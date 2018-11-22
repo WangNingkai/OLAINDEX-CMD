@@ -27,7 +27,7 @@ class Test extends Command
     public function handle()
     {
         $this->call('cache:clear');
-        $this->call('refresh:token', ['--quiet' => true]);
+        $this->call('refresh:token');
         $path =Tool::getRequestPath('/');
         $res = OneDrive::listChildrenByPath($path);
         dd($res);

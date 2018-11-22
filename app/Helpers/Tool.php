@@ -6,13 +6,17 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * Class Tool
+ * @package App\Helpers
+ */
 class Tool
 {
 
     /**
-     *文件大小转换
-     * @param string $size 原始大小
-     * @return string 转换大小
+     * Transfer File Size
+     * @param string $size origin
+     * @return string
      */
     public static function convertSize($size)
     {
@@ -22,7 +26,7 @@ class Tool
     }
 
     /**
-     * 处理url
+     * Handle Url
      * @param $path
      * @return string
      */
@@ -38,7 +42,7 @@ class Tool
     }
 
     /**
-     * 保存配置到json文件
+     * Save Config
      * @param $config
      * @return bool
      */
@@ -46,14 +50,14 @@ class Tool
     {
         $file = storage_path('app/config.json');
         if (!is_writable($file)) {
-            exit('权限不足，无法写入配置文件');
+            exit('Permission denied,Unable to write!');
         };
         $saved = file_put_contents($file, json_encode($config));
         return $saved;
     }
 
     /**
-     * 更新配置
+     * Upload Config
      * @param $data
      * @return bool
      */
@@ -66,7 +70,7 @@ class Tool
     }
 
     /**
-     * 从json文件读取配置
+     * Get Config
      * @param string $key
      * @param string $default
      * @return mixed|string
@@ -79,7 +83,7 @@ class Tool
                 copy(storage_path('app/config.sample.json'), storage_path('app/config.json'));
             };
             if (!is_readable($file)) {
-                exit('权限不足，无法预取配置文件');
+                exit('Permission denied,Unable to read!');
             };
             $config = file_get_contents($file);
             return json_decode($config, true);
@@ -88,7 +92,7 @@ class Tool
     }
 
     /**
-     * 解析路径
+     * Handle Request Path
      * @param $path
      * @param bool $isFile
      * @return string
@@ -105,7 +109,7 @@ class Tool
     }
 
     /**
-     * 绝对路径转换
+     * Transfer Path
      * @param $path
      * @return mixed
      */
@@ -127,7 +131,7 @@ class Tool
     }
 
     /**
-     * 处理格式化响应
+     * Format Response
      * @param $response
      * @param bool $origin
      * @return mixed
@@ -142,7 +146,7 @@ class Tool
     }
 
     /**
-     * 读取文件大小
+     * Read File Size
      * @param $path
      * @return bool|int|string
      */
@@ -178,7 +182,7 @@ class Tool
     }
 
     /**
-     * 读取文件内容
+     * Read File Content
      * @param $file
      * @param $offset
      * @param $length
@@ -192,7 +196,7 @@ class Tool
     }
 
     /**
-     * 获取指定目录下全部子目录和文件
+     * Get All File
      * @param $path
      * @return array
      */
@@ -218,7 +222,7 @@ class Tool
     }
 
     /**
-     * 判断配置
+     * Check Config
      * @return bool
      */
     public static function hasConfig()
@@ -229,7 +233,7 @@ class Tool
     }
 
     /**
-     * 判断账号绑定
+     * Check Bind
      * @return bool
      */
     public static function hasBind()
@@ -237,11 +241,6 @@ class Tool
         if (!empty(self::config('access_token')) && !empty(self::config('refresh_token')) && !empty(self::config('access_token_expires'))) {
             return true;
         } else return false;
-    }
-
-    public static function bindAccount()
-    {
-//        $response = OneDrive::getDrive();
     }
 
 }

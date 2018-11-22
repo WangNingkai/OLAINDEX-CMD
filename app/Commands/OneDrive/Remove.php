@@ -7,7 +7,7 @@ use App\Helpers\Tool;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
-class Rm extends Command
+class Remove extends Command
 {
     /**
      * The signature of the command.
@@ -48,7 +48,7 @@ class Rm extends Command
         } else {
             $remote = $this->argument('remote');
             if (!$remote) {
-                $this->warn('缺少参数');
+                $this->warn('Parameter Missing!');
                 exit;
             }
             $graphPath = Tool::getRequestPath($remote);
@@ -56,13 +56,13 @@ class Rm extends Command
             if ($id_response['code'] === 200)
                 $id = $id_response['data']['id'];
             else {
-                $this->warn('路径异常!');
+                $this->warn('Path Abnormal!');
                 exit;
             }
         }
         $response = Tool::handleResponse(OneDrive::deleteItem($id));
         $this->call('cache:clear');
-        $response['code'] == 200 ? $this->info("删除成功!") : $this->warn("删除失败!\n{$response['msg']} ");
+        $response['code'] == 200 ? $this->info("Deleted!") : $this->warn("Failed!\n{$response['msg']} ");
     }
 
     /**

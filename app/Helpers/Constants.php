@@ -2,6 +2,10 @@
 
 namespace App\Helpers;
 
+/**
+ * Class Constants
+ * @package App\Helpers
+ */
 class Constants
 {
     const LOGO = <<<EOF

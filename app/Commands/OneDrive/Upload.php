@@ -5,14 +5,14 @@ namespace App\Commands\OneDrive;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
-class Mv extends Command
+class Upload extends Command
 {
     /**
      * The signature of the command.
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'upload';
 
     /**
      * The description of the command.

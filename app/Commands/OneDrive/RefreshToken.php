@@ -78,7 +78,7 @@ class RefreshToken extends Command
     public function handle()
     {
         if (!Tool::hasBind() || !Tool::hasConfig()) {
-            $this->error('未绑定账户');
+            $this->error('Please bind Account!');
             exit;
         }
         $expires = Tool::config('access_token_expires', 0);

@@ -8,7 +8,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Cache;
 use LaravelZero\Framework\Commands\Command;
 
-class Ls extends Command
+class ListItem extends Command
 {
     /**
      * The signature of the command.
@@ -16,11 +16,11 @@ class Ls extends Command
      * @var string
      */
     protected $signature = 'ls
-                            {remote? : 远程地址}
-                            {--a|all : 全部参数}
-                            {--id= : 指定ID}
-                            {--offset=0 : 起始位置}
-                            {--limit=20 : 限制数量}';
+                            {remote? : Remote Path}
+                            {--a|all : List All Info}
+                            {--id= : ID}
+                            {--offset=0 : Start}
+                            {--limit=20 : Length}';
 
     /**
      * The description of the command.
@@ -56,7 +56,7 @@ class Ls extends Command
             });
         }
         if (!$data) {
-            $this->error('请确保参数正确或稍后重试...');
+            $this->error('Please confirm your options and try again later!');
             $this->call('cache:clear');
             exit;
         }

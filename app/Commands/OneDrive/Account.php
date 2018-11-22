@@ -2,6 +2,7 @@
 
 namespace App\Commands\OneDrive;
 
+use App\Helpers\Constants;
 use App\Helpers\OneDrive;
 use App\Helpers\Tool;
 use Illuminate\Console\Scheduling\Schedule;
@@ -46,9 +47,10 @@ class Account extends Command
                 if ($key !== '@odata.context')
                     $rows[] = [$key, is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value];
             }
+            $this->info(Constants::LOGO);
             $this->table([], $rows);
         } else {
-            $this->error('请稍后重试...');
+            $this->error('Please try again later.');
             exit;
         }
     }

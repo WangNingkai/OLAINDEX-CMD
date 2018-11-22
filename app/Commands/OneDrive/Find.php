@@ -15,11 +15,11 @@ class Find extends Command
      * @var string
      */
     protected $signature = 'find
-                            {keywords : 关键词}
+                            {keywords : Keywords}
                             {--id= : id}
-                            {--remote=/ : 查询路径}
-                            {--offset=0 : 起始位置}
-                            {--limit=20 : 限制数量}';
+                            {--remote=/ : Query Path}
+                            {--offset=0 : Start}
+                            {--limit=20 : Length}';
 
     /**
      * The description of the command.
@@ -47,7 +47,7 @@ class Find extends Command
         $response = Tool::handleResponse($result);
         $data = $response['code'] == 200 ? $response['data'] : [];
         if (!$data) {
-            $this->warn('出错了，请稍后重试...');
+            $this->warn('Please try again later');
             exit;
         }
         if ($id = $this->option('id')) {
@@ -77,7 +77,7 @@ class Find extends Command
             if ($id = $this->option('id')) {
                 $result = OneDrive::itemIdToPath($item['id']);
                 $response = Tool::handleResponse($result);
-                $path = $response['code'] == 200 ? $response['data']['path'] : '获取目录失败';
+                $path = $response['code'] == 200 ? $response['data']['path'] : 'Failed Fetch Path!';
                 $content = [$type, $path, $folder, $owner, $size, $time, $item['name']];
             } else {
                 $content = [$type, $item['id'], $folder, $owner, $size, $time, $item['name']];

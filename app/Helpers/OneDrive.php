@@ -13,7 +13,7 @@ use GuzzleHttp\Psr7\Response;
 class OneDrive
 {
     /**
-     * 请求API
+     * Request API
      * @param $method
      * @param $param
      * @param bool $stream
@@ -65,7 +65,7 @@ class OneDrive
     }
 
     /**
-     * 请求URL
+     * Request URL
      * @param $method
      * @param $param
      * @param bool $stream
@@ -105,7 +105,7 @@ class OneDrive
     }
 
     /**
-     * 获取个人资料
+     * Get Account Info
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -117,7 +117,7 @@ class OneDrive
     }
 
     /**
-     * 获取盘
+     * Get Drive Info
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -129,7 +129,7 @@ class OneDrive
     }
 
     /**
-     * 获取文件目录列表
+     * Get Drive Item Children
      * @param $itemId
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -149,7 +149,7 @@ class OneDrive
     }
 
     /**
-     * 获取文件目录列表
+     * Get Drive Item Children by Path
      * @param $path
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -169,6 +169,7 @@ class OneDrive
     }
 
     /**
+     * Get Drive Item Children Next Page
      * @param $list
      * @param array $result
      * @return array|false|mixed|\Psr\Http\Message\ResponseInterface|string
@@ -188,7 +189,7 @@ class OneDrive
     }
 
     /**
-     * 获取文件
+     * Get Item
      * @param $itemId
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -207,7 +208,7 @@ class OneDrive
     }
 
     /**
-     * 获取文件
+     * Get Item By Path
      * @param $path
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -226,7 +227,7 @@ class OneDrive
     }
 
     /**
-     * 复制文件返回进度
+     * Copy Item
      * @param $itemId
      * @param $parentItemId
      * @return string
@@ -259,7 +260,7 @@ class OneDrive
     }
 
     /**
-     * 移动文件
+     * Move Item
      * @param $itemId
      * @param $parentItemId
      * @param string $itemName
@@ -282,7 +283,7 @@ class OneDrive
     }
 
     /**
-     * 创建文件夹
+     * Create Folder
      * @param $itemName
      * @param $parentItemId
      * @return mixed
@@ -297,7 +298,7 @@ class OneDrive
     }
 
     /**
-     * 创建文件夹
+     * Create Folder By Path
      * @param $itemName
      * @param $path
      * @return mixed
@@ -312,7 +313,7 @@ class OneDrive
     }
 
     /**
-     * 删除
+     * Remove Item
      * @param $itemId
      * @param $eTag
      * @return mixed
@@ -336,7 +337,7 @@ class OneDrive
     }
 
     /**
-     * 搜索
+     * Search
      * @param $path
      * @param $query
      * @return mixed
@@ -357,7 +358,7 @@ class OneDrive
     }
 
     /**
-     * 获取缩略图
+     * Get Thumbnails
      * @param $itemId
      * @param $size
      * @return mixed
@@ -371,7 +372,7 @@ class OneDrive
     }
 
     /**
-     * 创建分享直链下载
+     * Create Share Link
      * @param $itemId
      * @return false|mixed|\Psr\Http\Message\ResponseInterface|string
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -412,7 +413,7 @@ class OneDrive
     }
 
     /**
-     * 删除分享链接
+     * Delete Share Link
      * @param $itemId
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -434,7 +435,7 @@ class OneDrive
     }
 
     /**
-     * 列举文件权限
+     * List Item permission
      * @param $itemId
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -452,7 +453,7 @@ class OneDrive
     }
 
     /**
-     * 删除指定权限
+     * Delete Item permission
      * @param $itemId
      * @param $permissionId
      * @return mixed
@@ -475,7 +476,7 @@ class OneDrive
     }
 
     /**
-     * 获取分享文件列表
+     * Get Shared Item
      * @return false|mixed|\Psr\Http\Message\ResponseInterface|string
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -487,7 +488,7 @@ class OneDrive
     }
 
     /**
-     * 获取分享文件详情
+     *  Get Shared Item Detail
      * @param $driveId
      * @param $itemId
      * @return false|mixed|\Psr\Http\Message\ResponseInterface|string
@@ -501,7 +502,7 @@ class OneDrive
     }
 
     /**
-     * 更新文件内容上传（4m及以下）
+     * Upload File(less 4MB)
      * @param $id
      * @param $content
      * @return mixed
@@ -517,7 +518,7 @@ class OneDrive
     }
 
     /**
-     * 上传文件（4m及以下）
+     * Upload File(less 4MB) by path
      * @param $path
      * @param $content
      * @return mixed
@@ -533,9 +534,9 @@ class OneDrive
     }
 
     /**
-     * 个人版离线下载 (实验性)
-     * @param string $remote 带文件名的远程路径
-     * @param string $url 链接
+     * Download via Url
+     * @param string $remote remote uri with filename
+     * @param string $url
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -570,7 +571,7 @@ class OneDrive
     }
 
     /**
-     * 大文件上传创建session
+     * Create Upload Session
      * @param $remote
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -589,7 +590,7 @@ class OneDrive
     }
 
     /**
-     * 分片上传
+     * Upload Partly
      * @param $url
      * @param $file
      * @param $offset
@@ -613,7 +614,7 @@ class OneDrive
     }
 
     /**
-     * 分片上传状态
+     * Get Upload Status
      * @param $url
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -625,7 +626,7 @@ class OneDrive
     }
 
     /**
-     * 删除分片上传任务
+     * Delete Upload Session
      * @param $url
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -637,7 +638,7 @@ class OneDrive
     }
 
     /**
-     * id转path
+     * Transfer Item ID To Path
      * @param $itemId
      * @return string
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -657,7 +658,6 @@ class OneDrive
             if (starts_with($path, '/drive/root:')) {
                 $path = str_after($path, '/drive/root:');
             }
-            // 兼容根目录
             if ($path == '') {
                 $pathArr = [];
             } else {
@@ -677,7 +677,7 @@ class OneDrive
     }
 
     /**
-     * path转id
+     * Transfer Item Path To ID
      * @param $path
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -695,7 +695,7 @@ class OneDrive
     }
 
     /**
-     * 文件信息格式化
+     * Format Response Data
      * @param $response
      * @param bool $isList
      * @return array
@@ -710,13 +710,13 @@ class OneDrive
             }
             return $items;
         } else {
-            // 兼容文件信息
             $response['ext'] = strtolower(pathinfo($response['name'], PATHINFO_EXTENSION));
             return $response;
         }
     }
 
     /**
+     * Return Response
      * @param $data
      * @param int $code
      * @param string $msg
@@ -732,7 +732,7 @@ class OneDrive
     }
 
     /**
-     * 处理响应
+     * Handle Response
      * @param $response Response
      * @return false|string
      */

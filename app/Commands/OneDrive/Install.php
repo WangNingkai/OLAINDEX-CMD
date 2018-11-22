@@ -29,12 +29,12 @@ class Install extends Command
     public function handle()
     {
         if (!Tool::hasConfig()) {
-            $this->warn('开始安装：');
-            $app_type = $this->choice('请选择版本(com:国际通用 cn:世纪互联)', ['com', 'cn'], 'com');
-            $client_id = $this->ask('请输入 client_id');
-            $client_secret = $this->ask('请输入 client_secret');
+            $this->warn('Starting：');
+            $app_type = $this->choice('Please choose a version (com:World cn:21Vianet)', ['com', 'cn'], 'com');
+            $client_id = $this->ask('client_id');
+            $client_secret = $this->ask('client_secret');
             $redirect_uri = Constants::REDIRECT_URI;;
-            $cache_expires = $this->ask('请输入缓存时间 (min)');;
+            $cache_expires = $this->ask('cache expires (min)');;
             $data = [
                 'app_type' => $app_type,
                 'client_id' => $client_id,
@@ -44,9 +44,9 @@ class Install extends Command
             ];
             $saved = Tool::updateConfig($data);
             $this->call('cache:clear');
-            $saved ? $this->info('配置完成！') : $this->warn('配置失败，请稍后重试！');
+            $saved ? $this->info('Configuration completed!') : $this->warn('Please try again later.');
         } else {
-            $this->warn('已配置完成！');
+            $this->warn('Already Configuration completed!');
         }
     }
 

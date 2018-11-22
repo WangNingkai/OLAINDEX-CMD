@@ -1,6 +1,6 @@
 {
     "name": "wangningkai/olaindex-cmd",
-    "description": "✨ Another OneDrive Command Line Tool.",
+    "description": "✨ Another OneDrive Command Line Client.",
     "keywords": ["OneDrive","framework", "laravel", "laravel zero", "console", "cli"],
     "type": "project",
     "license": "MIT",
