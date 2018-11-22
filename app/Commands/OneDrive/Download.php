@@ -2,6 +2,8 @@
 
 namespace App\Commands\OneDrive;
 
+use App\Helpers\OneDrive;
+use App\Helpers\Tool;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
@@ -12,23 +14,32 @@ class Download extends Command
      *
      * @var string
      */
-    protected $signature = 'download';
+    protected $signature = 'download {remote? : Remote Path}
+                                     {--id= : ID}';
 
     /**
      * The description of the command.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Download Item';
 
     /**
-     * Execute the console command.
-     *
-     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function handle()
     {
-        //
+        $this->call('refresh:token');
+        if ($id = $this->option('id')) {
+            $result = OneDrive::getItem($id);
+        } else {
+            $remote = $this->argument('remote');
+            if (empty($remote)) exit('Parameters Missing!');
+            $graphPath = Tool::getRequestPath($remote);
+            $result = OneDrive::getItemByPath($graphPath);
+        }
+        $response = Tool::handleResponse($result);
+        $response['code'] === 200 ? $this->info("Download Link:\n{$response['data']['@microsoft.graph.downloadUrl']}") : $this->warn("Failed!\n{$response['msg']} ");
     }
 
     /**

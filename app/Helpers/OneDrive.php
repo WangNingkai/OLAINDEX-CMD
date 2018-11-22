@@ -237,7 +237,7 @@ class OneDrive
     {
         $drive = Tool::handleResponse(self::getDrive());
         if ($drive['code'] === 200) {
-            $driveId = $drive['data']['id'];
+            $driveId = array_get($drive,'data.id');
             $endpoint = "/me/drive/items/{$itemId}/copy";
             $body = json_encode([
                 'parentReference' => [
@@ -255,7 +255,7 @@ class OneDrive
                 return $response;
             }
         } else {
-            return self::response('', 400, '获取磁盘信息错误');
+            return self::response('', 400, 'Error');
         }
     }
 

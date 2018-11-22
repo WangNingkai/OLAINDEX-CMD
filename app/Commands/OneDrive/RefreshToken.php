@@ -112,7 +112,7 @@ class RefreshToken extends Command
             $saved = Tool::updateConfig($data);
             $this->call('cache:clear');
             if (!$saved) $this->error('Refresh Token Error');
-            exit;
+            return;
         } catch (ClientException $e) {
             $this->error($e->getMessage());
             exit;

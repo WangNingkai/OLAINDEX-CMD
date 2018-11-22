@@ -2,6 +2,8 @@
 
 namespace App\Commands\OneDrive;
 
+use App\Helpers\OneDrive;
+use App\Helpers\Tool;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
@@ -12,23 +14,33 @@ class Share extends Command
      *
      * @var string
      */
-    protected $signature = 'share';
+    protected $signature = 'share {remote : Remote Path}';
 
     /**
      * The description of the command.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Create Download Link';
 
     /**
-     * Execute the console command.
-     *
-     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function handle()
     {
-        //
+        $this->call('refresh:token');
+        $this->info('Please waiting...');
+        $remote = $this->argument('remote');
+        $_remote = Tool::handleResponse(OneDrive::pathToItemId(Tool::getRequestPath($remote)));
+        $remote_id = $_remote['code'] === 200 ? array_get($_remote, 'data.id') : exit('Remote Path Abnormal');
+        $share = OneDrive::createShareLink($remote_id);
+        $response = Tool::handleResponse($share);
+        if ($response['code'] === 200) {
+            $direct = str_replace('15/download.aspx', '15/guestaccess.aspx', $response['data']['redirect']);
+            $this->info("Success! Share Link:\n{$direct}");
+        } else {
+            $this->warn("Failed!\n{$response['msg']}");
+        }
     }
 
     /**

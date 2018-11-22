@@ -2,6 +2,8 @@
 
 namespace App\Commands\OneDrive;
 
+use App\Helpers\OneDrive;
+use App\Helpers\Tool;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
@@ -12,23 +14,35 @@ class Move extends Command
      *
      * @var string
      */
-    protected $signature = 'mv';
+    protected $signature = 'mv 
+                            {origin : Origin Path}
+                            {target : Target Path}
+                            {--rename= : Rename}';
 
     /**
      * The description of the command.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Move Item';
 
     /**
-     * Execute the console command.
-     *
-     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function handle()
     {
-        //
+        $this->call('refresh:token');
+        $this->info('Please waiting...');
+        $origin = $this->argument('origin');
+        $_origin = Tool::handleResponse(OneDrive::pathToItemId(Tool::getRequestPath($origin)));
+        $origin_id = $_origin['code'] === 200 ? array_get($_origin, 'data.id') : exit('Origin Path Abnormal');
+        $target = $this->argument('target');
+        $_target = Tool::handleResponse(OneDrive::pathToItemId(Tool::getRequestPath($target)));
+        $target_id = $_origin['code'] === 200 ? array_get($_target, 'data.id') : exit('Target Path Abnormal');
+        $rename = $this->option('rename') ?? '';
+        $move = OneDrive::move($origin_id, $target_id, $rename);
+        $response = Tool::handleResponse($move);
+        $response['code'] === 200 ? $this->info("Move Success!") : $this->warn("Failed!\n{$response['msg']} ");
     }
 
     /**
