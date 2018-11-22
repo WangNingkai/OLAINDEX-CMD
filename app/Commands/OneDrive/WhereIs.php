@@ -7,23 +7,21 @@ use App\Helpers\Tool;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
-class Mkdir extends Command
+class WhereIs extends Command
 {
     /**
      * The signature of the command.
      *
      * @var string
      */
-    protected $signature = 'mkdir
-                            {name : 文件夹名称}
-                            {remote : 远程地址}';
+    protected $signature = 'whereis {id : 文件ID}';
 
     /**
      * The description of the command.
      *
      * @var string
      */
-    protected $description = 'Create A New Folder';
+    protected $description = 'Find The Item\'s Remote Path';
 
     /**
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -31,13 +29,14 @@ class Mkdir extends Command
     public function handle()
     {
         $this->call('refresh:token');
-        $name = $this->argument('name');
-        $remote = $this->argument('remote');
-        $graphPath = Tool::getRequestPath($remote);
-        $result =  OneDrive::mkdirByPath($name,$graphPath);
-        $response = Tool::handleResponse($result);
-        $this->call('cache:clear');
-        $response['code'] == 200 ? $this->info("创建目录成功!") : $this->warn("创建目录失败!\n{$response['msg']} ");
+        $id = $this->argument('id');
+        $response = Tool::handleResponse(OneDrive::itemIdToPath($id));
+        if ($response['code'] === 200) {
+            $this->info(array_get($response, 'data.path'));
+        } else {
+            $this->error($response['msg']);
+            exit;
+        }
     }
 
     /**

@@ -30,7 +30,7 @@ class Quota extends Command
      */
     public function handle()
     {
-        $this->call('refresh:token', ['--quiet' => true]);
+        $this->call('refresh:token');
         $data = Cache::remember('one:quota', Tool::config('cache_expires'), function () {
             $response = OneDrive::getDrive();
             $result = Tool::handleResponse($response);
@@ -49,10 +49,8 @@ class Quota extends Command
         $headers = array_keys(is_array($data) ? $data : []);
         $quota[] = $data;
         $this->info(Constants::LOGO);
-//        todo: $this->info('Account [' . bind_account() . ']');
         $this->info('App Version  [' . Tool::config('app_version') . ']');
         $this->table($headers, $quota, 'default');
-
     }
 
     /**

@@ -15,7 +15,7 @@ class Rm extends Command
      * @var string
      */
     protected $signature = 'rm 
-                            {remote : 文件地址}
+                            {remote? : 文件地址}
                             {--id= : 可选ID}
                             {--f|force : Force Delete}';
 
@@ -31,7 +31,7 @@ class Rm extends Command
      */
     public function handle()
     {
-        $this->call('refresh:token', ['--quiet' => true]);
+        $this->call('refresh:token');
         if ($this->option('force')) return $this->delete();
         if ($this->confirm('删除后仅能通过OneDrive回收站找回，确认继续吗?')) {
             return $this->delete();
@@ -43,10 +43,14 @@ class Rm extends Command
      */
     public function delete()
     {
-        $remote = $this->argument('remote');
         if ($this->option('id')) {
             $id = $this->option('id');
         } else {
+            $remote = $this->argument('remote');
+            if (!$remote) {
+                $this->warn('缺少参数');
+                exit;
+            }
             $graphPath = Tool::getRequestPath($remote);
             $id_response = Tool::handleResponse(OneDrive::pathToItemId($graphPath));
             if ($id_response['code'] === 200)
@@ -57,7 +61,7 @@ class Rm extends Command
             }
         }
         $response = Tool::handleResponse(OneDrive::deleteItem($id));
-        $this->call('cache:clear', ['--quiet' => true]);
+        $this->call('cache:clear');
         $response['code'] == 200 ? $this->info("删除成功!") : $this->warn("删除失败!\n{$response['msg']} ");
     }
 

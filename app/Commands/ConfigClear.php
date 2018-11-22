@@ -51,7 +51,7 @@ class ConfigClear extends Command
     {
         $this->files->delete($this->app->getCachedConfigPath());
 
-        $this->info('Configuration cache cleared!');
+        $this->info('Cache cleared!');
     }
 
     /**

@@ -78,7 +78,7 @@ class CacheClear extends Command
             'cache:cleared', [$this->argument('store'), $this->tags()]
         );
 
-        $this->info('Application cache cleared!');
+        $this->info('Cache Cleared!');
     }
 
     /**

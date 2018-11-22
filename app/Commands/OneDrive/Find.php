@@ -33,7 +33,7 @@ class Find extends Command
      */
     public function handle()
     {
-        $this->call('refresh:token', ['--quiet' => true]);
+        $this->call('refresh:token');
         $keywords = $this->argument('keywords');
         $remote = $this->option('remote');
         $offset = $this->option('offset');

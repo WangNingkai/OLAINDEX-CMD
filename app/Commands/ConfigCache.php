@@ -69,7 +69,7 @@ class ConfigCache extends Command
             throw new LogicException('Your configuration files are not serializable.', 0, $e);
         }
 
-        $this->info('Configuration cached successfully!');
+        $this->info('Cached successfully!');
     }
 
     /**

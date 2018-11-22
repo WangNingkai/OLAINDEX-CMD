@@ -73,6 +73,7 @@ class RefreshToken extends Command
 
     /**
      * Execute the console command.
+     * @return void
      */
     public function handle()
     {
@@ -109,8 +110,9 @@ class RefreshToken extends Command
                 'access_token_expires' => $expires
             ];
             $saved = Tool::updateConfig($data);
-            $this->call('cache:clear', ['--quiet' => true]);
-            $saved ? $this->info('Refresh Token Ok!') : $this->warn('Refresh Token Error!');
+            $this->call('cache:clear');
+            if (!$saved) $this->error('Refresh Token Error');
+            exit;
         } catch (ClientException $e) {
             $this->error($e->getMessage());
             exit;

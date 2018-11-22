@@ -17,6 +17,8 @@ class Ls extends Command
      */
     protected $signature = 'ls
                             {remote? : 远程地址}
+                            {--a|all : 全部参数}
+                            {--id= : 指定ID}
                             {--offset=0 : 起始位置}
                             {--limit=20 : 限制数量}';
 
@@ -34,19 +36,28 @@ class Ls extends Command
      */
     public function handle()
     {
-        dd($this->options());
-        $this->call('refresh:token', ['--quiet' => true]);
+        $this->call('refresh:token');
         $remote = $this->argument('remote');
+        $id = $this->option('id');
         $offset = $this->option('offset');
         $length = $this->option('limit');
-        $graphPath = Tool::getRequestPath($remote);
-        $data = Cache::remember('one:list:' . $graphPath, Tool::config('cache_expires'), function () use ($graphPath) {
-            $result = OneDrive::listChildrenByPath($graphPath);
-            $response = Tool::handleResponse($result);
-            return $response['code'] == 200 ? $response['data'] : [];
-        });
+        if ($id) {
+            $data = Cache::remember('one:list:id:' . $id, Tool::config('cache_expires'), function () use ($id) {
+                $result = OneDrive::listChildren($id);
+                $response = Tool::handleResponse($result);
+                return $response['code'] === 200 ? $response['data'] : [];
+            });
+        } else {
+            $graphPath = Tool::getRequestPath($remote);
+            $data = Cache::remember('one:list:path:' . $graphPath, Tool::config('cache_expires'), function () use ($graphPath) {
+                $result = OneDrive::listChildrenByPath($graphPath);
+                $response = Tool::handleResponse($result);
+                return $response['code'] === 200 ? $response['data'] : [];
+            });
+        }
         if (!$data) {
-            $this->error('出错了，请稍后重试...');
+            $this->error('请确保参数正确或稍后重试...');
+            $this->call('cache:clear');
             exit;
         }
         $data = $this->format($data);
@@ -69,7 +80,11 @@ class Ls extends Command
             $time = date('M m H:i', strtotime($item['lastModifiedDateTime']));
             $folder = array_has($item, 'folder') ? array_get($item, 'folder.childCount') : '1';
             $owner = array_get($item, 'createdBy.user.displayName');
-            $content = [$type, $folder, $owner, $size, $time, $item['name']];
+            if ($this->option('all')) {
+                $content = [$type, $item['id'], $folder, $owner, $size, $time, $item['name']];
+            } else {
+                $content = [$type, $folder, $owner, $size, $time, $item['name']];
+            }
             $list[] = $content;
         }
         return $list;
