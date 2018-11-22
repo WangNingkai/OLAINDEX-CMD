@@ -1,13 +1,4 @@
-# OLAINDEX-CMD
-
-```
-   ____  __    ___    _____   ______  _______  __      ________  _______ 
-  / __ \/ /   /   |  /  _/ | / / __ \/ ____/ |/ /     / ____/  |/  / __ \
- / / / / /   / /| |  / //  |/ / / / / __/  |   /_____/ /   / /|_/ / / / /
-/ /_/ / /___/ ___ |_/ // /|  / /_/ / /___ /   /_____/ /___/ /  / / /_/ / 
-\____/_____/_/  |_/___/_/ |_/_____/_____//_/|_|     \____/_/  /_/_____/ 
-```
-
+![OLAINDEX-LARGE.png](https://i.loli.net/2018/11/22/5bf6b12a9367b.png)
 
 🍀 Another OneDrive Command Line Client.
 
@@ -96,5 +87,3 @@ Wechat/AliPay: [Donate](https://pay.ningkai.wang)
 
 ## License
 OLAINDEX-CMD is an open-source software licensed under the MIT license.
-
-
