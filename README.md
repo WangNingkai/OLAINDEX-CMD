@@ -17,6 +17,9 @@ This is very much a copycat of [onedrivecmd](https://github.com/cnbeining/onedri
 
 OLAINDEX-CMD is a console version of OLAINDEX.
 
+## Proeject
+
+- Project Address : [https://github.com/WangNingkai/OLAINDEX-CMD](https://github.com/WangNingkai/OLAINDEX-CMD)
 
 ## Features
 
@@ -85,5 +88,13 @@ OLAINDEX-CMD
 Blog : [https://imwnk.cn](https://imwnk.cn)
 
 Email : [imwnk@live.com](mailto:imwnk@live.com)
+
+## Support the development
+Do you like this project? Support it by donating
+
+Wechat/AliPay: [Donate](https://pay.ningkai.wang)
+
+## License
+OLAINDEX-CMD is an open-source software licensed under the MIT license.
 
 
