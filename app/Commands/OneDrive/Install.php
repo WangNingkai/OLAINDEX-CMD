@@ -33,12 +33,6 @@ class Install extends Command
             if (!file_exists(storage_path('app/config.json'))) {
                 copy(storage_path('app/config.sample.json'), storage_path('app/config.json'));
             };
-            if (file_exists(base_path('.env'))) {
-                if ($this->confirm('Exist File .env overwrite?')) {
-                    @unlink(base_path('.env'));
-                    copy(base_path('.env.example'), base_path('.env'));
-                }
-            }
             $app_type = $this->choice('Please choose a version (com:World cn:21Vianet)', ['com', 'cn'], 'com');
             $client_id = $this->ask('client_id');
             $client_secret = $this->ask('client_secret');
@@ -53,6 +47,7 @@ class Install extends Command
             ];
             $saved = Tool::updateConfig($data);
             $this->call('cache:clear');
+            $this->call('config:cache');
             $saved ? $this->info('Configuration completed!') : $this->warn('Please try again later.');
         } else {
             $this->warn('Already Configuration completed!');

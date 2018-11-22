@@ -40,6 +40,7 @@ git reset --hard
 composer install -vvv
 chmod -R 755 storage
 chown -R www:www *
+cp .env.example .env
 php olaindex install
 chmod 777 storage/app/config.json
 ```
