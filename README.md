@@ -30,6 +30,20 @@ OLAINDEX-CMD is a console version of OLAINDEX.
 - Based on PHP,Easy installation.
 - Local Configuration file (/storage/app/config.json).
 
+## Installation
+
+```bash
+git clone https://github.com/WangNingkai/OLAINDEX-CMD.git tmp 
+mv tmp/.git . 
+rm -rf tmp 
+git reset --hard 
+composer install -vvv
+chmod -R 755 storage
+chown -R www:www *
+php olaindex install
+chmod 777 storage/app/config.json
+```
+
 ## Usage
 
 ```bash
@@ -63,7 +77,6 @@ OLAINDEX-CMD
   config:clear  Remove the configuration cache file
 
   refresh:token Refresh Token
-
 ```
 
 ## Author
