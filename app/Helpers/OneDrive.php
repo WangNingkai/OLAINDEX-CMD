@@ -671,16 +671,9 @@ class OneDrive
             if (starts_with($path, '/drive/root:')) {
                 $path = str_after($path, '/drive/root:');
             }
-            if ($path == '') {
-                $pathArr = [];
-            } else {
-                $pathArr = explode('/', $path);
-                if (trim(Tool::config('root'), '/') != '') {
-                    $pathArr = array_slice($pathArr, 1);
-                }
-            }
+            $pathArr = $path === '' ? [] : explode('/', $path);
             array_push($pathArr, $item['name']);
-            $path = trim(implode('/', $pathArr), '/');
+            $path = Tool::getAbsolutePath(implode('/', $pathArr));
             return self::response([
                 'path' => $path
             ]);
