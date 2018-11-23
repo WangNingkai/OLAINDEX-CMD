@@ -13,6 +13,19 @@ use GuzzleHttp\Psr7\Response;
 class OneDrive
 {
     /**
+     * @var $access_token
+     */
+    public $access_token;
+
+    /**
+     * OneDrive constructor.
+     */
+    public function __construct()
+    {
+        $this->access_token = Tool::config('access_token');
+    }
+
+    /**
      * Request API
      * @param $method
      * @param $param
@@ -46,7 +59,7 @@ class OneDrive
                 'headers' => array_merge([
                     'Host' => $baseUrl,
                     'Content-Type' => 'application/json',
-                    'Authorization' => 'Bearer ' . Tool::config('access_token')
+                    'Authorization' => 'Bearer ' . (new self())->access_token
                 ], $headers)
             ];
             $client = new Client($clientSettings);
@@ -237,7 +250,7 @@ class OneDrive
     {
         $drive = Tool::handleResponse(self::getDrive());
         if ($drive['code'] === 200) {
-            $driveId = array_get($drive,'data.id');
+            $driveId = array_get($drive, 'data.id');
             $endpoint = "/me/drive/items/{$itemId}/copy";
             $body = json_encode([
                 'parentReference' => [
@@ -722,7 +735,7 @@ class OneDrive
      * @param string $msg
      * @return false|string
      */
-    public static function response($data, $code = 200, $msg = 'ok')
+    public static function response($data, $code = 200, $msg = '')
     {
         return json_encode([
             'code' => $code,
