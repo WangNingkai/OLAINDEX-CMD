@@ -16,10 +16,10 @@ class Download extends Command
      *
      * @var string
      */
-    protected $signature = 'download {local? : Download Local Path }
-                                     {remote? : Download Remote Path}
+    protected $signature = 'download {remote? : Download Remote Path}
+                                     {local? : Download Local Path}
                                      {--id= : Download Remote File ID}
-                                     {--hack : Download Via aria2c}';
+                                     {--hack : Download via aria2c,Please use relative path}';
 
     /**
      * The description of the command.
@@ -49,17 +49,22 @@ class Download extends Command
         $response = Tool::handleResponse($result);
         if ($response['code'] === 200) {
             $download = $response['data']['@microsoft.graph.downloadUrl'];
+            dump($download);
+            $name = array_get($response, 'data.name');
             if (strtolower(PHP_OS) == "winnt") {
                 $this->warn("Download Not Support Windows");
                 $this->info("Download Link:\n{$download}");
                 exit;
             }
-            $command = !$hack ? "wget --no-check-certificate -O {$local} '{$download}'" : "aria2c -c -o {$local} -s16 -x16 -k1M '{$download}'";
+            $storage_path = Tool::getAbsolutePath($local) . $name;
+            $command = !$hack ? "wget --no-check-certificate -cO {$storage_path} '{$download}'" : "aria2c -c -o {$storage_path} -s16 -x16 -k1M '{$download}'";
             $process = new Process($command);
             $process->setTimeout(300);
-            $process->run();
-            if (!$process->isSuccessful()) {
-                throw new ProcessFailedException($process);
+            try {
+                $process->mustRun();
+                $this->info($process->getOutput());
+            } catch (ProcessFailedException $e) {
+                $this->error($e->getMessage());
             }
             $this->info($process->getOutput());
         } else  $this->warn("Failed!\n{$response['msg']} ");
