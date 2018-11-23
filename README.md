@@ -95,3 +95,7 @@ Wechat/AliPay: [Donate](https://pay.ningkai.wang)
 
 ## License
 OLAINDEX-CMD is an open-source software licensed under the MIT license.
+
+## 中文文档
+
+[Readme](https://github.com/WangNingkai/OLAINDEX-CMD/blob/master/README_CN.md)
