@@ -54,12 +54,14 @@ class Download extends Command
                 $this->info("Download Link:\n{$download}");
                 exit;
             }
-            $command = $hack ? "wget --no-check-certificate -c -O --tries=16 {$local} {$download}" : "aria2c -c -o {$local} -s16 -x16 -k1M {$download}";
+            $command = !$hack ? "wget --no-check-certificate -O {$local} '{$download}'" : "aria2c -c -o {$local} -s16 -x16 -k1M '{$download}'";
             $process = new Process($command);
+            $process->setTimeout(300);
             $process->run();
             if (!$process->isSuccessful()) {
                 throw new ProcessFailedException($process);
             }
+            $this->info($process->getOutput());
         } else  $this->warn("Failed!\n{$response['msg']} ");
     }
 
