@@ -26,17 +26,25 @@ OLAINDEX-CMD is a console version of OLAINDEX.
 
 ## Installation
 
+### Manual installation
+
 ```bash
-git clone https://github.com/WangNingkai/OLAINDEX-CMD.git tmp 
-mv tmp/.git . 
-rm -rf tmp 
-git reset --hard 
-composer install -vvv
+mkdir -p olaindex && cd olaindex
+git clone https://github.com/WangNingkai/OLAINDEX-CMD.git tmp  && mv tmp/.git . && rm -rf tmp && git reset --hard
+composer install
 chmod -R 755 storage
 chown -R www:www *
 cp .env.example .env
-php olaindex install
+cp storage/app/config.sample.json storage/app/config.json
 chmod 777 storage/app/config.json
+chmod +x olaindex
+./olaindex install
+```
+
+### Automatic installation
+
+```bash
+wget -N --no-check-certificate https://raw.githubusercontent.com/WangNingkai/OLAINDEX-CMD/master/install.sh && chmod +x install.sh && bash install.sh
 ```
 
 ## Usage

@@ -12,3 +12,8 @@
 
 - release v1.0 
 
+## 2018.11.23
+
+- Support offline download to onedrive
+
+- Support Download via aria2c

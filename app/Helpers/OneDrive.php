@@ -561,7 +561,7 @@ class OneDrive
         $drive = Tool::handleResponse(self::getDrive());
         if ($drive['code'] == 200) {
             if ($drive['data']['driveType'] == 'business') {
-                return self::response(['driveType' => $drive['data']['driveType']], 400, '企业账号无法使用离线下载');
+                return self::response(['driveType' => $drive['data']['driveType']], 400, 'Account Not Support');
             } else {
                 $path = Tool::getAbsolutePath(dirname($remote));
                 // $pathId = $this->pathToItemId($path);
