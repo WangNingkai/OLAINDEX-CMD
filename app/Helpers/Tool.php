@@ -2,8 +2,6 @@
 
 namespace App\Helpers;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -23,22 +21,6 @@ class Tool
         $units = array(' B', ' KB', ' MB', ' GB', ' TB');
         for ($i = 0; $size >= 1024 && $i < 4; $i++) $size /= 1024;
         return @round($size, 2) . $units[$i];
-    }
-
-    /**
-     * Handle Url
-     * @param $path
-     * @return string
-     */
-    public static function handleUrl($path)
-    {
-        $url = [];
-        foreach (explode('/', $path) as $key => $value) {
-            if (empty(!$value)) {
-                $url[] = rawurlencode($value);
-            }
-        }
-        return @implode('/', $url);
     }
 
     /**
@@ -92,20 +74,34 @@ class Tool
     }
 
     /**
-     * Handle Request Path
+     * Handle Url
      * @param $path
-     * @param bool $isFile
      * @return string
      */
-    public static function getRequestPath($path, $isFile = false)
+    public static function handleUrl($path)
     {
-        $origin_path = self::getAbsolutePath($path);
-        $query_path = trim($origin_path, '/');
-        $query_path = Tool::handleUrl(rawurldecode($query_path));
-        $request_path = empty($query_path) ? '/' : ":/{$query_path}:/";
-        if ($isFile)
-            return rtrim($request_path, ':/');
-        return $request_path;
+        $url = [];
+        foreach (explode('/', $path) as $key => $value) {
+            if (empty(!$value)) {
+                $url[] = rawurlencode($value);
+            }
+        }
+        return @implode('/', $url);
+    }
+
+    /**
+     * Format Response
+     * @param $response
+     * @param bool $origin
+     * @return mixed
+     */
+    public static function handleResponse($response, $origin = true)
+    {
+        if ($origin) {
+            return json_decode($response, true);
+        } else {
+            return json_decode($response, true)['data'];
+        }
     }
 
     /**
@@ -131,18 +127,20 @@ class Tool
     }
 
     /**
-     * Format Response
-     * @param $response
-     * @param bool $origin
-     * @return mixed
+     * Handle Request Path
+     * @param $path
+     * @param bool $isFile
+     * @return string
      */
-    public static function handleResponse($response, $origin = true)
+    public static function getRequestPath($path, $isFile = false)
     {
-        if ($origin) {
-            return json_decode($response, true);
-        } else {
-            return json_decode($response, true)['data'];
-        }
+        $origin_path = self::getAbsolutePath($path);
+        $query_path = trim($origin_path, '/');
+        $query_path = Tool::handleUrl(rawurldecode($query_path));
+        $request_path = empty($query_path) ? '/' : ":/{$query_path}:/";
+        if ($isFile)
+            return rtrim($request_path, ':/');
+        return $request_path;
     }
 
     /**

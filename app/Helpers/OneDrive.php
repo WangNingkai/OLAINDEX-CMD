@@ -5,6 +5,7 @@ namespace App\Helpers;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class OneDrive
@@ -73,6 +74,7 @@ class OneDrive
             ]);
             return $response;
         } catch (ClientException $e) {
+            Log::error('OneDrive API', ['code' => $e->getCode(), 'msg' => $e->getMessage()]);
             return self::response('', $e->getCode(), $e->getMessage());
         }
     }
@@ -113,6 +115,7 @@ class OneDrive
             ]);
             return $response;
         } catch (ClientException $e) {
+            Log::error('OneDrive HTTP', ['code' => $e->getCode(), 'msg' => $e->getMessage()]);
             return self::response('', $e->getCode(), $e->getMessage());
         }
     }
