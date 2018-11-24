@@ -150,7 +150,7 @@ class OneDrive
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public static function listChildren($itemId = '')
+    public static function getChildren($itemId = '')
     {
         $endpoint = $itemId ? "/me/drive/items/{$itemId}/children" : "/me/drive/root/children";
         $response = self::requestApi('get', $endpoint);
@@ -170,7 +170,7 @@ class OneDrive
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public static function listChildrenByPath($path = '/')
+    public static function getChildrenByPath($path = '/')
     {
         $endpoint = $path === '/' ? "/me/drive/root/children" : "/me/drive/root{$path}children";
         $response = self::requestApi('get', $endpoint);

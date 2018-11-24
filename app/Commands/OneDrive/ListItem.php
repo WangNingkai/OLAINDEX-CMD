@@ -43,14 +43,14 @@ class ListItem extends Command
         $length = $this->option('limit');
         if ($id) {
             $data = Cache::remember('one:list:id:' . $id, Tool::config('cache_expires'), function () use ($id) {
-                $result = OneDrive::listChildren($id);
+                $result = OneDrive::getChildren($id);
                 $response = Tool::handleResponse($result);
                 return $response['code'] === 200 ? $response['data'] : [];
             });
         } else {
             $graphPath = Tool::getRequestPath($remote);
             $data = Cache::remember('one:list:path:' . $graphPath, Tool::config('cache_expires'), function () use ($graphPath) {
-                $result = OneDrive::listChildrenByPath($graphPath);
+                $result = OneDrive::getChildrenByPath($graphPath);
                 $response = Tool::handleResponse($result);
                 return $response['code'] === 200 ? $response['data'] : [];
             });
