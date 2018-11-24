@@ -31,7 +31,7 @@ class Offline extends Command
     {
         $this->call('refresh:token');
         $remote = $this->argument('remote');
-        $url = $this->option('url');
+        $url = $this->argument('url');
         $result = OneDrive::uploadUrl($remote, $url);
         $response = Tool::handleResponse($result);
         if ($response['code'] === 200) {
