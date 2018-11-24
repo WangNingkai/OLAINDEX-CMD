@@ -50,6 +50,9 @@ class Offline extends Command
                 } elseif ($status === 'completed') {
                     $this->info('Progress: ' . array_get($result, 'percentageComplete'));
                     $done = true;
+                } elseif ($status === 'notStarted') {
+                    $this->error('Status:' . $status);
+                    $done = false;
                 } else {
                     $this->error('Status:' . $status);
                     $done = true;
