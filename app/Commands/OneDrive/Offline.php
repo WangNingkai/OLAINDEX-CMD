@@ -36,6 +36,7 @@ class Offline extends Command
         $response = Tool::handleResponse($result);
         if ($response['code'] === 200) {
             $redirect = array_get($response, 'data.redirect');
+            $this->info('progress link: ' . $redirect);
             $done = false;
             while (!$done) {
                 $result = Tool::handleResponse(OneDrive::requestUrl('get', $redirect)->getBody()->getContents());
