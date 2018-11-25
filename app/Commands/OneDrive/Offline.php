@@ -33,13 +33,13 @@ class Offline extends Command
         $remote = $this->argument('remote');
         $url = $this->argument('url');
         $result = OneDrive::uploadUrl($remote, $url);
-        $response = Tool::handleResponse($result);
+        $response = OneDrive::responseToArray($result);
         if ($response['code'] === 200) {
             $redirect = array_get($response, 'data.redirect');
             $this->info('progress link: ' . $redirect);
             $done = false;
             while (!$done) {
-                $result = Tool::handleResponse(OneDrive::requestUrl('get', $redirect)->getBody()->getContents());
+                $result = OneDrive::responseToArray(OneDrive::requestUrl('get', $redirect)->getBody()->getContents());
                 $status = array_get($result, 'status');
                 if ($status === 'failed') {
                     $this->error(array_get($result, 'error.message'));

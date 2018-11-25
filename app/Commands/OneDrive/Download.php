@@ -46,7 +46,7 @@ class Download extends Command
             $graphPath = Tool::getRequestPath($remote);
             $result = OneDrive::getItemByPath($graphPath);
         }
-        $response = Tool::handleResponse($result);
+        $response = OneDrive::responseToArray($result);
         if ($response['code'] === 200) {
             $download = $response['data']['@microsoft.graph.downloadUrl'];
             dump($download);

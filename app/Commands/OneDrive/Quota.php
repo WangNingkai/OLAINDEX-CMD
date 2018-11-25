@@ -33,7 +33,7 @@ class Quota extends Command
         $this->call('refresh:token');
         $data = Cache::remember('one:quota', Tool::config('cache_expires'), function () {
             $response = OneDrive::getDrive();
-            $result = Tool::handleResponse($response);
+            $result = OneDrive::responseToArray($response);
             if ($result['code'] == 200) {
                 $quota = array_get($result, 'data.quota');
                 foreach ($quota as $k => $item) {

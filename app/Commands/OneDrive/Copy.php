@@ -33,18 +33,18 @@ class Copy extends Command
         $this->call('refresh:token');
         $this->info('Please waiting...');
         $origin = $this->argument('origin');
-        $_origin = Tool::handleResponse(OneDrive::pathToItemId(Tool::getRequestPath($origin)));
+        $_origin = OneDrive::responseToArray(OneDrive::pathToItemId(Tool::getRequestPath($origin)));
         $origin_id = $_origin['code'] === 200 ? array_get($_origin, 'data.id') : exit('Origin Path Abnormal');
         $target = $this->argument('target');
-        $_target = Tool::handleResponse(OneDrive::pathToItemId(Tool::getRequestPath($target)));
+        $_target = OneDrive::responseToArray(OneDrive::pathToItemId(Tool::getRequestPath($target)));
         $target_id = $_origin['code'] === 200 ? array_get($_target, 'data.id') : exit('Target Path Abnormal');
         $copy = OneDrive::copy($origin_id, $target_id);
-        $response = Tool::handleResponse($copy);
+        $response = OneDrive::responseToArray($copy);
         if ($response['code'] === 200) {
             $redirect = array_get($response, 'data.redirect');
             $done = false;
             while (!$done) {
-                $result = Tool::handleResponse(OneDrive::requestUrl('get', $redirect)->getBody()->getContents());
+                $result = OneDrive::responseToArray(OneDrive::requestUrl('get', $redirect)->getBody()->getContents());
                 $status = array_get($result, 'status');
                 if ($status === 'failed') {
                     $this->error(array_get($result, 'error.message'));

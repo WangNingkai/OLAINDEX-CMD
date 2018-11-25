@@ -74,37 +74,6 @@ class Tool
     }
 
     /**
-     * Handle Url
-     * @param $path
-     * @return string
-     */
-    public static function handleUrl($path)
-    {
-        $url = [];
-        foreach (explode('/', $path) as $key => $value) {
-            if (empty(!$value)) {
-                $url[] = rawurlencode($value);
-            }
-        }
-        return @implode('/', $url);
-    }
-
-    /**
-     * Format Response
-     * @param $response
-     * @param bool $origin
-     * @return mixed
-     */
-    public static function handleResponse($response, $origin = true)
-    {
-        if ($origin) {
-            return json_decode($response, true);
-        } else {
-            return json_decode($response, true)['data'];
-        }
-    }
-
-    /**
      * Transfer Path
      * @param $path
      * @return mixed
@@ -136,7 +105,7 @@ class Tool
     {
         $origin_path = self::getAbsolutePath($path);
         $query_path = trim($origin_path, '/');
-        $query_path = Tool::handleUrl(rawurldecode($query_path));
+        $query_path = OneDrive::handleUrl(rawurldecode($query_path));
         $request_path = empty($query_path) ? '/' : ":/{$query_path}:/";
         if ($isFile)
             return rtrim($request_path, ':/');
@@ -144,40 +113,27 @@ class Tool
     }
 
     /**
-     * Read File Size
-     * @param $path
-     * @return bool|int|string
+     * Check Config
+     * @return bool
      */
-    public static function readFileSize($path)
+    public static function hasConfig()
     {
-        if (!file_exists($path))
+        if (empty(self::config('client_id')) || empty(self::config('client_secret')) || empty(self::config('redirect_uri'))) {
             return false;
-        $size = filesize($path);
-        if (!($file = fopen($path, 'rb')))
-            return false;
-        if ($size >= 0) { //Check if it really is a small file (< 2 GB)
-            if (fseek($file, 0, SEEK_END) === 0) { //It really is a small file
-                fclose($file);
-                return $size;
-            }
-        }
-        //Quickly jump the first 2 GB with fseek. After that fseek is not working on 32 bit php (it uses int internally)
-        $size = PHP_INT_MAX - 1;
-        if (fseek($file, PHP_INT_MAX - 1) !== 0) {
-            fclose($file);
-            return false;
-        }
-        $length = 1024 * 1024;
-        $read = '';
-        while (!feof($file)) { //Read the file until end
-            $read = fread($file, $length);
-            $size = bcadd($size, $length);
-        }
-        $size = bcsub($size, $length);
-        $size = bcadd($size, strlen($read));
-        fclose($file);
-        return $size;
+        } else return true;
     }
+
+    /**
+     * Check Bind
+     * @return bool
+     */
+    public static function hasBind()
+    {
+        if (!empty(self::config('access_token')) && !empty(self::config('refresh_token')) && !empty(self::config('access_token_expires'))) {
+            return true;
+        } else return false;
+    }
+
 
     /**
      * Get All File
@@ -203,28 +159,6 @@ class Tool
             }
         }
         return $arr;
-    }
-
-    /**
-     * Check Config
-     * @return bool
-     */
-    public static function hasConfig()
-    {
-        if (empty(self::config('client_id')) || empty(self::config('client_secret')) || empty(self::config('redirect_uri'))) {
-            return false;
-        } else return true;
-    }
-
-    /**
-     * Check Bind
-     * @return bool
-     */
-    public static function hasBind()
-    {
-        if (!empty(self::config('access_token')) && !empty(self::config('refresh_token')) && !empty(self::config('access_token_expires'))) {
-            return true;
-        } else return false;
     }
 
 }

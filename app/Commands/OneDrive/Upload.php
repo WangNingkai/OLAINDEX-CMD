@@ -36,7 +36,7 @@ class Upload extends Command
         $local = $this->argument('local');
         $remote = $this->argument('remote');
         $chuck = $this->option('chuck');
-        $file_size = Tool::readFileSize($local);
+        $file_size = OneDrive::readFileSize($local);
         if ($file_size < 4194304) {
             return $this->upload($local, $remote);
         } else {
@@ -55,7 +55,7 @@ class Upload extends Command
         $file_name = basename($local);
         $graphPath = Tool::getRequestPath($remote . $file_name);
         $result = OneDrive::uploadByPath($graphPath, $content);
-        $response = Tool::handleResponse($result);
+        $response = OneDrive::responseToArray($result);
         $response['code'] === 200 ? $this->info('Upload Success!') : $this->warn('Failed!');
     }
 
@@ -68,12 +68,12 @@ class Upload extends Command
     public function uploadBySession($local, $remote, $chuck = 3276800)
     {
         ini_set('memory_limit', '-1');
-        $file_size = Tool::readFileSize($local);
+        $file_size = OneDrive::readFileSize($local);
         $file_name = basename($local);
         $target_path = Tool::getAbsolutePath($remote);
         $path = trim($target_path, '/') == '' ? ":/{$file_name}:/" : Tool::getRequestPath($target_path . $file_name);
         $url_request = OneDrive::createUploadSession($path);
-        $url_response = Tool::handleResponse($url_request);
+        $url_response = OneDrive::responseToArray($url_request);
         if ($url_response['code'] == 200) {
             $url = array_get($url_response, 'data.uploadUrl');
         } else {
@@ -88,7 +88,7 @@ class Upload extends Command
         while (!$done) {
             $retry = 0;
             $res = OneDrive::uploadToSession($url, $local, $offset, $length);
-            $response = Tool::handleResponse($res);
+            $response = OneDrive::responseToArray($res);
             if ($response['code'] == 200) {
                 $data = $response['data'];
                 if (!empty($data['nextExpectedRanges'])) {

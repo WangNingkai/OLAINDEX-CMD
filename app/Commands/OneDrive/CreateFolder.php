@@ -35,7 +35,7 @@ class CreateFolder extends Command
         $remote = $this->argument('remote');
         $graphPath = Tool::getRequestPath($remote);
         $result =  OneDrive::mkdirByPath($name,$graphPath);
-        $response = Tool::handleResponse($result);
+        $response = OneDrive::responseToArray($result);
         $this->call('cache:clear');
         $response['code'] == 200 ? $this->info("Folder Created!") : $this->warn("Failed!\n{$response['msg']} ");
     }

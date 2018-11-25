@@ -30,7 +30,7 @@ class WhereIs extends Command
     {
         $this->call('refresh:token');
         $id = $this->argument('id');
-        $response = Tool::handleResponse(OneDrive::itemIdToPath($id));
+        $response = OneDrive::responseToArray(OneDrive::itemIdToPath($id));
         if ($response['code'] === 200) {
             $this->info(array_get($response, 'data.path'));
         } else {

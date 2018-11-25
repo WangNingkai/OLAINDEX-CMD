@@ -30,7 +30,7 @@ class Account extends Command
     public function handle()
     {
         $this->call('refresh:token');
-        $response = Tool::handleResponse(OneDrive::getMe());
+        $response = OneDrive::responseToArray(OneDrive::getMe());
         if ($response['code'] === 200) {
             $params = $this->option('params');
             if (!$params) {
