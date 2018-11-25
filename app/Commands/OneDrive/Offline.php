@@ -3,7 +3,6 @@
 namespace App\Commands\OneDrive;
 
 use App\Helpers\OneDrive;
-use App\Helpers\Tool;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
@@ -39,7 +38,8 @@ class Offline extends Command
             $this->info('progress link: ' . $redirect);
             $done = false;
             while (!$done) {
-                $result = OneDrive::responseToArray(OneDrive::requestUrl('get', $redirect)->getBody()->getContents());
+                $content = OneDrive::requestUrl('get', $redirect)->getBody()->getContents();
+                $result = OneDrive::responseToArray($content);
                 $status = array_get($result, 'status');
                 if ($status === 'failed') {
                     $this->error(array_get($result, 'error.message'));
