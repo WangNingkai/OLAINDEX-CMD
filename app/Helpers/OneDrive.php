@@ -19,11 +19,23 @@ class OneDrive
     public $access_token;
 
     /**
+     * @var $base_url
+     */
+    public $base_url;
+
+    /**
+     * @var $api_version
+     */
+    public $api_version;
+
+    /**
      * OneDrive constructor.
      */
     public function __construct()
     {
         $this->access_token = Tool::config('access_token');
+        $this->base_url = Tool::config('app_type') == 'com' ? Constants::REST_ENDPOINT : Constants::REST_ENDPOINT_21V;
+        $this->api_version = Constants::API_VERSION;
     }
 
     /**
@@ -47,18 +59,16 @@ class OneDrive
             $headers = [];
             $timeout = 5;
         }
-        $baseUrl = Tool::config('app_type') === 'com' ? Constants::REST_ENDPOINT : Constants::REST_ENDPOINT_21V;
-        $apiVersion = Constants::API_VERSION;
         if (stripos($endpoint, "http") === 0) {
             $requestUrl = $endpoint;
         } else {
-            $requestUrl = $apiVersion . $endpoint;
+            $requestUrl = (new self())->api_version . $endpoint;
         }
         try {
             $clientSettings = [
-                'base_uri' => $baseUrl,
+                'base_uri' => (new self())->base_url,
                 'headers' => array_merge([
-                    'Host' => $baseUrl,
+                    'Host' => (new self())->base_url,
                     'Content-Type' => 'application/json',
                     'Authorization' => 'Bearer ' . (new self())->access_token
                 ], $headers)
@@ -194,7 +204,8 @@ class OneDrive
     public static function getNextLinkList($list, &$result = [])
     {
         if (array_has($list, '@odata.nextLink')) {
-            $endpoint = str_after($list['@odata.nextLink'], Constants::REST_ENDPOINT . Constants::API_VERSION);
+            $baseLength = strlen((new self())->base_url) + strlen((new self())->api_version);
+            $endpoint = substr($list['@odata.nextLink'], $baseLength);
             $response = self::requestApi('get', $endpoint);
             $data = json_decode($response->getBody()->getContents(), true);
             $result = array_merge($list['value'], self::getNextLinkList($data, $result));
@@ -335,7 +346,7 @@ class OneDrive
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public static function deleteItem($itemId, $eTag = '')
+    public static function delete($itemId, $eTag = '')
     {
         $endpoint = "/me/drive/items/{$itemId}";
         $headers = $eTag ? ['if-match' => $eTag] : [];
@@ -436,7 +447,7 @@ class OneDrive
      */
     public static function deleteShareLink($itemId)
     {
-        $result = self::listPermission($itemId);
+        $result = self::getPermission($itemId);
         $response = Tool::handleResponse($result);
         if ($response['code'] === 200) {
             $data = $response['data'];
@@ -456,7 +467,7 @@ class OneDrive
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public static function listPermission($itemId)
+    public static function getPermission($itemId)
     {
         $endpoint = "/me/drive/items/{$itemId}/permissions";
         $response = self::requestApi('get', $endpoint);

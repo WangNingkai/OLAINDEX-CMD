@@ -60,7 +60,7 @@ class Remove extends Command
                 exit;
             }
         }
-        $response = Tool::handleResponse(OneDrive::deleteItem($id));
+        $response = Tool::handleResponse(OneDrive::delete($id));
         $this->call('cache:clear');
         $response['code'] == 200 ? $this->info("Deleted!") : $this->warn("Failed!\n{$response['msg']} ");
     }
