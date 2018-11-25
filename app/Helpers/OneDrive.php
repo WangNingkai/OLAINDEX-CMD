@@ -50,12 +50,12 @@ class OneDrive
     {
         if (is_array($param)) {
             @list($endpoint, $requestBody, $requestHeaders, $timeout) = $param;
-            $requestBody = $requestBody ?? '';
+            $body = $requestBody ?? '';
             $headers = $requestHeaders ?? [];
             $timeout = $timeout ?? 5;
         } else {
             $endpoint = $param;
-            $requestBody = '';
+            $body = '';
             $headers = [];
             $timeout = 5;
         }
@@ -75,7 +75,7 @@ class OneDrive
             ];
             $client = new Client($clientSettings);
             $response = $client->request($method, $requestUrl, [
-                'body' => $requestBody,
+                'body' => $body,
                 'stream' => $stream,
                 'timeout' => $timeout,
                 'allow_redirects' => [
@@ -101,12 +101,12 @@ class OneDrive
     {
         if (is_array($param)) {
             @list($endpoint, $requestBody, $requestHeaders, $timeout) = $param;
-            $requestBody = $requestBody ?? '';
+            $body = $requestBody ?? '';
             $headers = $requestHeaders ?? [];
             $timeout = $timeout ?? 5;
         } else {
             $endpoint = $param;
-            $requestBody = '';
+            $body = '';
             $headers = [];
             $timeout = 5;
         }
@@ -116,7 +116,7 @@ class OneDrive
             ];
             $client = new Client($clientSettings);
             $response = $client->request($method, $endpoint, [
-                'body' => $requestBody,
+                'body' => $body,
                 'stream' => $stream,
                 'timeout' => $timeout,
                 'allow_redirects' => [
@@ -262,7 +262,7 @@ class OneDrive
      */
     public static function copy($itemId, $parentItemId)
     {
-        $drive = Tool::handleResponse(self::getDrive());
+        $drive = self::responseToArray(self::getDrive());
         if ($drive['code'] === 200) {
             $driveId = array_get($drive, 'data.id');
             $endpoint = "/me/drive/items/{$itemId}/copy";
@@ -448,7 +448,7 @@ class OneDrive
     public static function deleteShareLink($itemId)
     {
         $result = self::getPermission($itemId);
-        $response = Tool::handleResponse($result);
+        $response = self::responseToArray($result);
         if ($response['code'] === 200) {
             $data = $response['data'];
             $permission = array_first($data, function ($value) {
@@ -569,15 +569,15 @@ class OneDrive
      */
     public static function uploadUrl($remote, $url)
     {
-        $drive = Tool::handleResponse(self::getDrive());
+        $drive = self::responseToArray(self::getDrive());
         if ($drive['code'] == 200) {
             if ($drive['data']['driveType'] == 'business') {
                 return self::response(['driveType' => $drive['data']['driveType']], 400, 'Account Not Support');
             } else {
-                $path = Tool::getAbsolutePath(dirname($remote));
+                $path = self::getAbsolutePath(dirname($remote));
                 // $pathId = $this->pathToItemId($path);
                 // $endpoint = "/me/drive/items/{$pathId}/children"; // by id
-                $handledPath = Tool::handleUrl(trim($path, '/'));
+                $handledPath = self::handleUrl(trim($path, '/'));
                 $graphPath = empty($handledPath) ? '/' : ":/{$handledPath}:/";
                 $endpoint = "/me/drive/root{$graphPath}children";
                 $headers = ['Prefer' => 'respond-async'];
@@ -627,10 +627,10 @@ class OneDrive
      */
     public static function uploadToSession($url, $file, $offset, $length = 5242880)
     {
-        $file_size = Tool::readFileSize($file);
+        $file_size = self::readFileSize($file);
         $content_length = (($offset + $length) > $file_size) ? ($file_size - $offset) : $length;
         $end = (($offset + $length) > $file_size) ? ($file_size - 1) : $offset + $content_length - 1;
-        $content = Tool::readFileContent($file, $offset, $length);
+        $content = self::readFileContent($file, $offset, $length);
         $headers = [
             'Content-Length' => $content_length,
             'Content-Range' => "bytes {$offset}-{$end}/{$file_size}",
@@ -673,7 +673,7 @@ class OneDrive
     public static function itemIdToPath($itemId)
     {
         $result = self::getItem($itemId);
-        $response = Tool::handleResponse($result);
+        $response = self::responseToArray($result);
         if ($response['code'] === 200) {
             $item = $response['data'];
             if (!array_key_exists('path', $item['parentReference']) && $item['name'] == 'root') {
@@ -687,7 +687,7 @@ class OneDrive
             }
             $pathArr = $path === '' ? [] : explode('/', $path);
             array_push($pathArr, $item['name']);
-            $path = Tool::getAbsolutePath(implode('/', $pathArr));
+            $path = self::getAbsolutePath(implode('/', $pathArr));
             return self::response([
                 'path' => $path
             ]);
@@ -768,6 +768,108 @@ class OneDrive
         } else {
             return $response;
         }
+    }
 
+    /**
+     * Response To Array
+     * @param $response Response
+     * @param bool $origin
+     * @return array
+     */
+    public static function responseToArray($response, $origin = true)
+    {
+        if ($origin) {
+            return json_decode($response, true);
+        } else {
+            return json_decode($response, true)['data'];
+        }
+    }
+
+    /**
+     * Transfer Path
+     * @param $path
+     * @return mixed
+     */
+    public static function getAbsolutePath($path)
+    {
+        $path = str_replace(['/', '\\', '//'], '/', $path);
+
+        $parts = array_filter(explode('/', $path), 'strlen');
+        $absolutes = [];
+        foreach ($parts as $part) {
+            if ('.' == $part) continue;
+            if ('..' == $part) {
+                array_pop($absolutes);
+            } else {
+                $absolutes[] = $part;
+            }
+        }
+        return str_replace('//', '/', '/' . implode('/', $absolutes) . '/');
+    }
+
+    /**
+     * Handle Url
+     * @param $path
+     * @return string
+     */
+    public static function handleUrl($path)
+    {
+        $url = [];
+        foreach (explode('/', $path) as $key => $value) {
+            if (empty(!$value)) {
+                $url[] = rawurlencode($value);
+            }
+        }
+        return @implode('/', $url);
+    }
+
+    /**
+     * Read File Size
+     * @param $path
+     * @return bool|int|string
+     */
+    public static function readFileSize($path)
+    {
+        if (!file_exists($path))
+            return false;
+        $size = filesize($path);
+        if (!($file = fopen($path, 'rb')))
+            return false;
+        if ($size >= 0) { //Check if it really is a small file (< 2 GB)
+            if (fseek($file, 0, SEEK_END) === 0) { //It really is a small file
+                fclose($file);
+                return $size;
+            }
+        }
+        //Quickly jump the first 2 GB with fseek. After that fseek is not working on 32 bit php (it uses int internally)
+        $size = PHP_INT_MAX - 1;
+        if (fseek($file, PHP_INT_MAX - 1) !== 0) {
+            fclose($file);
+            return false;
+        }
+        $length = 1024 * 1024;
+        $read = '';
+        while (!feof($file)) { //Read the file until end
+            $read = fread($file, $length);
+            $size = bcadd($size, $length);
+        }
+        $size = bcsub($size, $length);
+        $size = bcadd($size, strlen($read));
+        fclose($file);
+        return $size;
+    }
+
+    /**
+     * Read File Content
+     * @param $file
+     * @param $offset
+     * @param $length
+     * @return bool|string
+     */
+    public static function readFileContent($file, $offset, $length)
+    {
+        $handler = fopen($file, "rb") ?? die('Failed Get Content');
+        fseek($handler, $offset);
+        return fread($handler, $length);
     }
 }

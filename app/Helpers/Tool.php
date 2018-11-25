@@ -180,20 +180,6 @@ class Tool
     }
 
     /**
-     * Read File Content
-     * @param $file
-     * @param $offset
-     * @param $length
-     * @return bool|string
-     */
-    public static function readFileContent($file, $offset, $length)
-    {
-        $handler = fopen($file, "rb") ?? die('获取文件内容失败');
-        fseek($handler, $offset);
-        return fread($handler, $length);
-    }
-
-    /**
      * Get All File
      * @param $path
      * @return array
