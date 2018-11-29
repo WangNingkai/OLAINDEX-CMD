@@ -45,7 +45,7 @@ class Copy extends Command
             $redirect = array_get($response, 'data.redirect');
             $done = false;
             while (!$done) {
-                $result = OneDrive::responseToArray(OneDrive::requestUrl('get', $redirect)->getBody()->getContents());
+                $result = OneDrive::responseToArray(OneDrive::request('get', $redirect,'',true)->getBody()->getContents());
                 $status = array_get($result, 'status');
                 if ($status === 'failed') {
                     $this->error(array_get($result, 'error.message'));

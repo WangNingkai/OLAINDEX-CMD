@@ -38,7 +38,7 @@ class Offline extends Command
             $this->info('progress link: ' . $redirect);
             $done = false;
             while (!$done) {
-                $content = OneDrive::requestUrl('get', $redirect)->getBody()->getContents();
+                $content = OneDrive::request('get', $redirect,'',true)->getBody()->getContents();
                 $result = OneDrive::responseToArray($content);
                 $status = array_get($result, 'status');
                 if ($status === 'failed') {
