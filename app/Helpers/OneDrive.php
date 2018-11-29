@@ -42,13 +42,13 @@ class OneDrive
      * Request API
      * @param $method
      * @param $param
-     * @param bool $stream
+     * @param bool $returnStream
+     * @param bool $noToken
      * @return false|mixed|\Psr\Http\Message\ResponseInterface|string
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public static function requestApi($method, $param, $stream = true)
+    public static function request($method, $param, $returnStream = true, $noToken = false)
     {
-        $od = new self();
         if (is_array($param)) {
             @list($endpoint, $requestBody, $requestHeaders, $timeout) = $param;
             $body = $requestBody ?? '';
@@ -60,12 +60,15 @@ class OneDrive
             $headers = [];
             $timeout = 5;
         }
-        if (stripos($endpoint, "http") === 0) {
-            $requestUrl = $endpoint;
+        if ($noToken) {
+            $clientSettings = [
+                'headers' => $headers
+            ];
         } else {
-            $requestUrl = $od->api_version . $endpoint;
-        }
-        try {
+            $od = new self();
+            if (stripos($endpoint, "http") !== 0) {
+                $endpoint = $od->api_version . $endpoint;
+            }
             $clientSettings = [
                 'base_uri' => $od->base_url,
                 'headers' => array_merge([
@@ -74,10 +77,12 @@ class OneDrive
                     'Authorization' => 'Bearer ' . $od->access_token
                 ], $headers)
             ];
+        }
+        try {
             $client = new Client($clientSettings);
-            $response = $client->request($method, $requestUrl, [
+            $response = $client->request($method, $endpoint, [
                 'body' => $body,
-                'stream' => $stream,
+                'stream' => $returnStream,
                 'timeout' => $timeout,
                 'allow_redirects' => [
                     'track_redirects' => true
@@ -91,47 +96,6 @@ class OneDrive
     }
 
     /**
-     * Request URL
-     * @param $method
-     * @param $param
-     * @param bool $stream
-     * @return false|mixed|\Psr\Http\Message\ResponseInterface|string
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public static function requestUrl($method, $param, $stream = true)
-    {
-        if (is_array($param)) {
-            @list($endpoint, $requestBody, $requestHeaders, $timeout) = $param;
-            $body = $requestBody ?? '';
-            $headers = $requestHeaders ?? [];
-            $timeout = $timeout ?? 5;
-        } else {
-            $endpoint = $param;
-            $body = '';
-            $headers = [];
-            $timeout = 5;
-        }
-        try {
-            $clientSettings = [
-                'headers' => $headers
-            ];
-            $client = new Client($clientSettings);
-            $response = $client->request($method, $endpoint, [
-                'body' => $body,
-                'stream' => $stream,
-                'timeout' => $timeout,
-                'allow_redirects' => [
-                    'track_redirects' => true
-                ]
-            ]);
-            return $response;
-        } catch (ClientException $e) {
-            Log::error('OneDrive HTTP', ['code' => $e->getCode(), 'msg' => $e->getMessage()]);
-            return self::response('', $e->getCode(), $e->getMessage());
-        }
-    }
-
-    /**
      * Get Account Info
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -139,7 +103,7 @@ class OneDrive
     public static function getMe()
     {
         $endpoint = '/me';
-        $response = self::requestApi('get', $endpoint);
+        $response = self::request('get', $endpoint);
         return self::handleResponse($response);
     }
 
@@ -151,7 +115,7 @@ class OneDrive
     public static function getDrive()
     {
         $endpoint = '/me/drive';
-        $response = self::requestApi('get', $endpoint);
+        $response = self::request('get', $endpoint);
         return self::handleResponse($response);
     }
 
@@ -164,7 +128,7 @@ class OneDrive
     public static function getChildren($itemId = '')
     {
         $endpoint = $itemId ? "/me/drive/items/{$itemId}/children" : "/me/drive/root/children";
-        $response = self::requestApi('get', $endpoint);
+        $response = self::request('get', $endpoint);
         if ($response instanceof Response) {
             $response = json_decode($response->getBody()->getContents(), true);
             $data = self::getNextLinkList($response);
@@ -184,7 +148,7 @@ class OneDrive
     public static function getChildrenByPath($path = '/')
     {
         $endpoint = $path === '/' ? "/me/drive/root/children" : "/me/drive/root{$path}children";
-        $response = self::requestApi('get', $endpoint);
+        $response = self::request('get', $endpoint);
         if ($response instanceof Response) {
             $response = json_decode($response->getBody()->getContents(), true);
             $data = self::getNextLinkList($response);
@@ -207,7 +171,7 @@ class OneDrive
         if (array_has($list, '@odata.nextLink')) {
             $baseLength = strlen((new self())->base_url) + strlen((new self())->api_version);
             $endpoint = substr($list['@odata.nextLink'], $baseLength);
-            $response = self::requestApi('get', $endpoint);
+            $response = self::request('get', $endpoint);
             $data = json_decode($response->getBody()->getContents(), true);
             $result = array_merge($list['value'], self::getNextLinkList($data, $result));
         } else {
@@ -225,7 +189,7 @@ class OneDrive
     public static function getItem($itemId)
     {
         $endpoint = "/me/drive/items/{$itemId}";
-        $response = self::requestApi('get', $endpoint);
+        $response = self::request('get', $endpoint);
         if ($response instanceof Response) {
             $data = json_decode($response->getBody()->getContents(), true);
             $res = self::formatArray($data, false);
@@ -244,7 +208,7 @@ class OneDrive
     public static function getItemByPath($path)
     {
         $endpoint = "/me/drive/root{$path}";
-        $response = self::requestApi('get', $endpoint);
+        $response = self::request('get', $endpoint);
         if ($response instanceof Response) {
             $data = json_decode($response->getBody()->getContents(), true);
             $res = self::formatArray($data, false);
@@ -273,7 +237,7 @@ class OneDrive
                     'id' => $parentItemId
                 ],
             ]);
-            $response = self::requestApi('post', [$endpoint, $body], false);
+            $response = self::request('post', [$endpoint, $body], false);
             if ($response instanceof Response) {
                 $data = [
                     'redirect' => $response->getHeaderLine('Location')
@@ -306,7 +270,7 @@ class OneDrive
         if ($itemName)
             $content = array_add($content, 'name', $itemName);
         $body = json_encode($content);
-        $response = self::requestApi('patch', [$endpoint, $body]);
+        $response = self::request('patch', [$endpoint, $body]);
         return self::handleResponse($response);
     }
 
@@ -321,7 +285,7 @@ class OneDrive
     {
         $endpoint = "/me/drive/items/$parentItemId/children";
         $body = '{"name":"' . $itemName . '","folder":{},"@microsoft.graph.conflictBehavior":"rename"}';
-        $response = self::requestApi('post', [$endpoint, $body]);
+        $response = self::request('post', [$endpoint, $body]);
         return self::handleResponse($response);
     }
 
@@ -336,7 +300,7 @@ class OneDrive
     {
         $endpoint = $path === '/' ? "/me/drive/root/children" : "/me/drive/root{$path}children";
         $body = '{"name":"' . $itemName . '","folder":{},"@microsoft.graph.conflictBehavior":"rename"}';
-        $response = self::requestApi('post', [$endpoint, $body]);
+        $response = self::request('post', [$endpoint, $body]);
         return self::handleResponse($response);
     }
 
@@ -351,7 +315,7 @@ class OneDrive
     {
         $endpoint = "/me/drive/items/{$itemId}";
         $headers = $eTag ? ['if-match' => $eTag] : [];
-        $response = self::requestApi('delete', [$endpoint, '', $headers]);
+        $response = self::request('delete', [$endpoint, '', $headers]);
         if ($response instanceof Response) {
             $statusCode = $response->getStatusCode();
             if ($statusCode === 204) {
@@ -374,7 +338,7 @@ class OneDrive
     public static function search($path, $query)
     {
         $endpoint = $path === '/' ? "/me/drive/root/search(q='{$query}')" : "/me/drive/root{$path}search(q='{$query}')";
-        $response = self::requestApi('get', $endpoint);
+        $response = self::request('get', $endpoint);
         if ($response instanceof Response) {
             $response = json_decode($response->getBody()->getContents(), true);
             $data = self::getNextLinkList($response);
@@ -395,7 +359,7 @@ class OneDrive
     public static function thumbnails($itemId, $size)
     {
         $endpoint = "/me/drive/items/{$itemId}/thumbnails/0/{$size}";
-        $response = self::requestApi('get', $endpoint);
+        $response = self::request('get', $endpoint);
         return self::handleResponse($response);
     }
 
@@ -409,7 +373,7 @@ class OneDrive
     {
         $endpoint = "/me/drive/items/{$itemId}/createLink";
         $body = '{"type": "view","scope": "anonymous"}';
-        $response = self::requestApi('post', [$endpoint, $body]);
+        $response = self::request('post', [$endpoint, $body]);
         if ($response instanceof Response) {
             $data = json_decode($response->getBody()->getContents(), true);
             $web_url = array_get($data, 'link.webUrl');
@@ -471,7 +435,7 @@ class OneDrive
     public static function getPermission($itemId)
     {
         $endpoint = "/me/drive/items/{$itemId}/permissions";
-        $response = self::requestApi('get', $endpoint);
+        $response = self::request('get', $endpoint);
         if ($response instanceof Response) {
             $data = json_decode($response->getBody()->getContents(), true);
             return self::response($data['value']);
@@ -490,7 +454,7 @@ class OneDrive
     public static function deletePermission($itemId, $permissionId)
     {
         $endpoint = "/me/drive/items/{$itemId}/permissions/{$permissionId}";
-        $response = self::requestApi('delete', $endpoint);
+        $response = self::request('delete', $endpoint);
         if ($response instanceof Response) {
             $statusCode = $response->getStatusCode();
             if ($statusCode == 204) {
@@ -511,7 +475,7 @@ class OneDrive
     public static function getShareWithMe()
     {
         $endpoint = '/me/drive/sharedWithMe';
-        $response = self::requestApi('get', $endpoint);
+        $response = self::request('get', $endpoint);
         return self::handleResponse($response);
     }
 
@@ -525,7 +489,7 @@ class OneDrive
     public static function getShareWithMeDetail($driveId, $itemId)
     {
         $endpoint = "/drives/{$driveId}/items/{$itemId}";
-        $response = self::requestApi('get', $endpoint);
+        $response = self::request('get', $endpoint);
         return self::handleResponse($response);
     }
 
@@ -541,7 +505,7 @@ class OneDrive
         $stream = \GuzzleHttp\Psr7\stream_for($content);
         $endpoint = "/me/drive/items/{$id}/content";
         $body = $stream;
-        $response = self::requestApi('put', [$endpoint, $body]);
+        $response = self::request('put', [$endpoint, $body]);
         return self::handleResponse($response);
     }
 
@@ -557,7 +521,7 @@ class OneDrive
         $stream = \GuzzleHttp\Psr7\stream_for($content);
         $endpoint = "/me/drive/root{$path}content";
         $body = $stream;
-        $response = self::requestApi('put', [$endpoint, $body]);
+        $response = self::request('put', [$endpoint, $body]);
         return self::handleResponse($response);
     }
 
@@ -583,7 +547,7 @@ class OneDrive
                 $endpoint = "/me/drive/root{$graphPath}children";
                 $headers = ['Prefer' => 'respond-async'];
                 $body = '{"@microsoft.graph.sourceUrl":"' . $url . '","name":"' . pathinfo($remote, PATHINFO_BASENAME) . '","file":{}}';
-                $response = self::requestApi('post', [$endpoint, $body, $headers]);
+                $response = self::request('post', [$endpoint, $body, $headers]);
                 if ($response instanceof Response) {
                     $data = [
                         'redirect' => $response->getHeaderLine('Location')
@@ -612,7 +576,7 @@ class OneDrive
                 '@microsoft.graph.conflictBehavior' => 'fail',
             ]
         ]);
-        $response = self::requestApi('post', [$endpoint, $body]);
+        $response = self::request('post', [$endpoint, $body]);
         return self::handleResponse($response);
 
     }
@@ -637,7 +601,7 @@ class OneDrive
             'Content-Range' => "bytes {$offset}-{$end}/{$file_size}",
         ];
         $requestBody = $content;
-        $response = self::requestUrl('put', [$url, $requestBody, $headers, 360]);
+        $response = self::request('put', [$url, $requestBody, $headers, 360],'',true);
         return self::handleResponse($response);
     }
 
@@ -649,7 +613,7 @@ class OneDrive
      */
     public static function uploadSessionStatus($url)
     {
-        $response = self::requestUrl('get', $url);
+        $response = self::request('get', $url,'',true);
         return self::handleResponse($response);
     }
 
@@ -661,7 +625,7 @@ class OneDrive
      */
     public static function deleteUploadSession($url)
     {
-        $response = self::requestUrl('delete', $url);
+        $response = self::request('delete', $url,'',true);
         return self::handleResponse($response);
     }
 
@@ -706,7 +670,7 @@ class OneDrive
     public static function pathToItemId($path)
     {
         $endpoint = $path === '/' ? '/me/drive/root' : '/me/drive/root' . $path;
-        $response = self::requestApi('get', $endpoint);
+        $response = self::request('get', $endpoint);
         if ($response instanceof Response) {
             $response = json_decode($response->getBody()->getContents(), true);
             return self::response(['id' => $response['id']]);
