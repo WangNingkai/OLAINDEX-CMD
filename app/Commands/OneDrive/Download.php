@@ -48,8 +48,7 @@ class Download extends Command
         }
         $response = OneDrive::responseToArray($result);
         if ($response['code'] === 200) {
-            $download = $response['data']['@microsoft.graph.downloadUrl'];
-            dump($download);
+            $download = $response['data']['@microsoft.graph.downloadUrl'] ?? exit('404 NOT FOUND');
             $name = array_get($response, 'data.name');
             if (strtolower(PHP_OS) == "winnt") {
                 $this->warn("Download Not Support Windows");
