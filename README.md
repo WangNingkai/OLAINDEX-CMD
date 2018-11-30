@@ -8,6 +8,19 @@ This is very much a copycat of [onedrivecmd](https://github.com/cnbeining/onedri
 
 OLAINDEX-CMD is a console version of OLAINDEX.
 
+## Server Requirements
+
+- PHP >= 7.1.3
+- OpenSSL PHP Extension
+- PDO PHP Extension
+- Mbstring PHP Extension
+- Tokenizer PHP Extension
+- XML PHP Extension
+- Ctype PHP Extension
+- JSON PHP Extension
+- BCMath PHP Extension
+- Fileinfo PHP Extension
+
 ## Proeject
 
 - Project Address : [https://github.com/WangNingkai/OLAINDEX-CMD](https://github.com/WangNingkai/OLAINDEX-CMD)

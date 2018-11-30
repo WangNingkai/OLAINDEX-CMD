@@ -8,6 +8,19 @@
 
 OLAINDEX-CMD 是命令行版的 OLAINDEX.
 
+## 服务器要求
+
+- PHP >= 7.1.3
+- PHP OpenSSL 扩展
+- PHP PDO 扩展
+- PHP Mbstring 扩展
+- PHP Tokenizer 扩展
+- PHP XML 扩展
+- PHP Ctype 扩展
+- PHP JSON 扩展
+- PHP BCMath 扩展
+- PHP Fileinfo 扩展 
+
 ## Github
 
 - 项目地址 : [https://github.com/WangNingkai/OLAINDEX-CMD](https://github.com/WangNingkai/OLAINDEX-CMD)
