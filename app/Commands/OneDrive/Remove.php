@@ -15,8 +15,8 @@ class Remove extends Command
      * @var string
      */
     protected $signature = 'rm 
-                            {remote? : 文件地址}
-                            {--id= : 可选ID}
+                            {remote? : Remote path}
+                            {--id= : ID}
                             {--f|force : Force Delete}';
 
     /**
@@ -33,7 +33,7 @@ class Remove extends Command
     {
         $this->call('refresh:token');
         if ($this->option('force')) return $this->delete();
-        if ($this->confirm('删除后仅能通过OneDrive回收站找回，确认继续吗?')) {
+        if ($this->confirm('You can not restore,continue?')) {
             return $this->delete();
         }
     }

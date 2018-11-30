@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -105,7 +107,7 @@ class Tool
     {
         $origin_path = self::getAbsolutePath($path);
         $query_path = trim($origin_path, '/');
-        $query_path = OneDrive::handleUrl(rawurldecode($query_path));
+        $query_path = OneDrive::getEncodeUrl(rawurldecode($query_path));
         $request_path = empty($query_path) ? '/' : ":/{$query_path}:/";
         if ($isFile)
             return rtrim($request_path, ':/');
@@ -159,6 +161,24 @@ class Tool
             }
         }
         return $arr;
+    }
+
+    /**
+     * Get Content By Url
+     * @param $url
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public static function getFileContentByUrl($url)
+    {
+        try {
+            $client = new Client();
+            $response = $client->request('get', $url);
+            $response = $response->getBody()->getContents();
+        } catch (ClientException $e) {
+            $response = response()->json(['code' => $e->getCode(), 'msg' => $e->getMessage()]);
+        }
+        return $response ?? '';
     }
 
 }

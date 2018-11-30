@@ -542,7 +542,7 @@ class OneDrive
                 $path = self::getAbsolutePath(dirname($remote));
                 // $pathId = $this->pathToItemId($path);
                 // $endpoint = "/me/drive/items/{$pathId}/children"; // by id
-                $handledPath = self::handleUrl(trim($path, '/'));
+                $handledPath = self::getEncodeUrl(trim($path, '/'));
                 $graphPath = empty($handledPath) ? '/' : ":/{$handledPath}:/";
                 $endpoint = "/me/drive/root{$graphPath}children";
                 $headers = ['Prefer' => 'respond-async'];
@@ -751,6 +751,23 @@ class OneDrive
     }
 
     /**
+     * Handle Request Path
+     * @param $path
+     * @param bool $isFile
+     * @return string
+     */
+    public static function getRequestPath($path, $isFile = false)
+    {
+        $origin_path = self::getAbsolutePath($path);
+        $query_path = trim($origin_path, '/');
+        $query_path = self::getEncodeUrl(rawurldecode($query_path));
+        $request_path = empty($query_path) ? '/' : ":/{$query_path}:/";
+        if ($isFile)
+            return rtrim($request_path, ':/');
+        return $request_path;
+    }
+
+    /**
      * Transfer Path
      * @param $path
      * @return mixed
@@ -777,7 +794,7 @@ class OneDrive
      * @param $path
      * @return string
      */
-    public static function handleUrl($path)
+    public static function getEncodeUrl($path)
     {
         $url = [];
         foreach (explode('/', $path) as $key => $value) {

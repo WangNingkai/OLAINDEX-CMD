@@ -31,7 +31,7 @@ class Reset extends Command
         if ($this->option('force')) {
            return $this->reset();
         } else {
-            if ($this->confirm('Reset will erase all data, continue?？')) {
+            if ($this->confirm('Reset will erase all data, continue?')) {
                 return $this->reset();
             }
         }

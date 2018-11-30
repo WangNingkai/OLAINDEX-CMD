@@ -19,7 +19,7 @@ EOF;
     const LATEST_VERSION = 'v1.0';
     const API_VERSION = 'v1.0';
 
-    const REDIRECT_URI = 'https://olaindex.ningkai.wang';
+    const DEFAULT_REDIRECT_URI = 'https://olaindex.ningkai.wang';
 
     const REST_ENDPOINT = 'https://graph.microsoft.com/';
     const AUTHORITY_URL = 'https://login.microsoftonline.com/common';
