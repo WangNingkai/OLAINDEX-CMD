@@ -36,7 +36,7 @@ class Install extends Command
             $app_type = $this->choice('Please choose a version (com:World cn:21Vianet)', ['com', 'cn'], 'com');
             $client_id = $this->ask('client_id');
             $client_secret = $this->ask('client_secret');
-            $redirect_uri = $this->ask('redirect_uri'.Constants::REDIRECT_URI);
+            $redirect_uri = $this->ask('redirect_uri',Constants::REDIRECT_URI);
             $cache_expires = $this->ask('cache expires (min)');;
             $data = [
                 'app_type' => $app_type,
