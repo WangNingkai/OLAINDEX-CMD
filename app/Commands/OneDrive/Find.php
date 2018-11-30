@@ -45,7 +45,7 @@ class Find extends Command
             $result = OneDrive::search($graphPath, $keywords);
         }
         $response = OneDrive::responseToArray($result);
-        $data = $response['code'] == 200 ? $response['data'] : [];
+        $data = $response['code'] === 200 ? $response['data'] : [];
         if (!$data) {
             $this->warn('Please try again later');
             exit;
@@ -77,7 +77,7 @@ class Find extends Command
             if ($id = $this->option('id')) {
                 $result = OneDrive::itemIdToPath($item['id']);
                 $response = OneDrive::responseToArray($result);
-                $path = $response['code'] == 200 ? $response['data']['path'] : 'Failed Fetch Path!';
+                $path = $response['code'] === 200 ? $response['data']['path'] : 'Failed Fetch Path!';
                 $content = [$type, $path, $folder, $owner, $size, $time, $item['name']];
             } else {
                 $content = [$type, $item['id'], $folder, $owner, $size, $time, $item['name']];

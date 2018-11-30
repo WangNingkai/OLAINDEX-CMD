@@ -62,7 +62,7 @@ class Remove extends Command
         }
         $response = OneDrive::responseToArray(OneDrive::delete($id));
         $this->call('cache:clear');
-        $response['code'] == 200 ? $this->info("Deleted!") : $this->warn("Failed!\n{$response['msg']} ");
+        $response['code'] === 200 ? $this->info("Deleted!") : $this->warn("Failed!\n{$response['msg']} ");
     }
 
     /**

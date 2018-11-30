@@ -71,10 +71,10 @@ class Upload extends Command
         $file_size = OneDrive::readFileSize($local);
         $file_name = basename($local);
         $target_path = Tool::getAbsolutePath($remote);
-        $path = trim($target_path, '/') == '' ? ":/{$file_name}:/" : Tool::getRequestPath($target_path . $file_name);
+        $path = trim($target_path, '/') === '' ? ":/{$file_name}:/" : Tool::getRequestPath($target_path . $file_name);
         $url_request = OneDrive::createUploadSession($path);
         $url_response = OneDrive::responseToArray($url_request);
-        if ($url_response['code'] == 200) {
+        if ($url_response['code'] === 200) {
             $url = array_get($url_response, 'data.uploadUrl');
         } else {
             $this->warn($url_response['msg']);
@@ -89,7 +89,7 @@ class Upload extends Command
             $retry = 0;
             $res = OneDrive::uploadToSession($url, $local, $offset, $length);
             $response = OneDrive::responseToArray($res);
-            if ($response['code'] == 200) {
+            if ($response['code'] === 200) {
                 $data = $response['data'];
                 if (!empty($data['nextExpectedRanges'])) {
                     $this->info("length: {$data['nextExpectedRanges'][0]}");
