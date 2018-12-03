@@ -16,18 +16,20 @@ class CommandServiceProvider extends ServiceProvider
      *
      * @var array
      */
-    protected $commands = [
-        'CacheClear' => 'command.cache.clear',
-    ];
+    protected $commands
+        = [
+            'CacheClear' => 'command.cache.clear',
+        ];
 
     /**
      * The commands to be registered.
      *
      * @var array
      */
-    protected $devCommands = [
+    protected $devCommands
+        = [
 
-    ];
+        ];
 
 
     /**
@@ -56,7 +58,8 @@ class CommandServiceProvider extends ServiceProvider
     /**
      * Register the given commands.
      *
-     * @param  array  $commands
+     * @param  array $commands
+     *
      * @return void
      */
     protected function registerCommands(array $commands)
@@ -123,6 +126,7 @@ class CommandServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return array_merge(array_values($this->commands), array_values($this->devCommands));
+        return array_merge(array_values($this->commands),
+            array_values($this->devCommands));
     }
 }

@@ -35,16 +35,20 @@ class Account extends Command
             if (!$params) {
                 $data = array_get($response, 'data');
             } else {
-                $params = explode(',',$params[0]);
+                $params = explode(',', $params[0]);
                 $data = [];
                 foreach ($params as $param) {
-                    $data[$param] = array_get($response, 'data.' . $param);
+                    $data[$param] = array_get($response, 'data.'.$param);
                 }
             }
             $rows = [];
             foreach ($data as $key => $value) {
-                if ($key !== '@odata.context')
-                    $rows[] = [$key, is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value];
+                if ($key !== '@odata.context') {
+                    $rows[] = [$key,
+                               is_array($value) ? json_encode($value,
+                                   JSON_UNESCAPED_UNICODE) : $value,
+                    ];
+                }
             }
             $this->info(Constants::LOGO);
             $this->table([], $rows);
@@ -58,6 +62,7 @@ class Account extends Command
      * Define the command's schedule.
      *
      * @param  \Illuminate\Console\Scheduling\Schedule $schedule
+     *
      * @return void
      */
     public function schedule(Schedule $schedule): void

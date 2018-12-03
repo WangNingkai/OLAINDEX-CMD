@@ -66,13 +66,18 @@ class RefreshToken extends Command
         $this->client_id = Tool::config('client_id');
         $this->client_secret = Tool::config('client_secret');
         $this->redirect_uri = Tool::config('redirect_uri');
-        $this->authorize_url = Tool::config('app_type','com') === 'com' ? Constants::AUTHORITY_URL . Constants::AUTHORIZE_ENDPOINT : Constants::AUTHORITY_URL_21V . Constants::AUTHORIZE_ENDPOINT_21V;
-        $this->access_token_url = Tool::config('app_type','com') === 'com' ? Constants::AUTHORITY_URL . Constants::TOKEN_ENDPOINT : Constants::AUTHORITY_URL_21V . Constants::TOKEN_ENDPOINT_21V;
+        $this->authorize_url = Tool::config('app_type', 'com') === 'com'
+            ? Constants::AUTHORITY_URL.Constants::AUTHORIZE_ENDPOINT
+            : Constants::AUTHORITY_URL_21V.Constants::AUTHORIZE_ENDPOINT_21V;
+        $this->access_token_url = Tool::config('app_type', 'com') === 'com'
+            ? Constants::AUTHORITY_URL.Constants::TOKEN_ENDPOINT
+            : Constants::AUTHORITY_URL_21V.Constants::TOKEN_ENDPOINT_21V;
         $this->scopes = Constants::SCOPES;
     }
 
     /**
      * Execute the console command.
+     *
      * @return void
      */
     public function handle()
@@ -90,28 +95,35 @@ class RefreshToken extends Command
         try {
             $client = new Client();
             $form_params = [
-                'client_id' => $this->client_id,
+                'client_id'     => $this->client_id,
                 'client_secret' => $this->client_secret,
-                'redirect_uri' => $this->redirect_uri,
+                'redirect_uri'  => $this->redirect_uri,
                 'refresh_token' => $existingRefreshToken,
-                'grant_type' => 'refresh_token',
+                'grant_type'    => 'refresh_token',
             ];
-            if (Tool::config('app_type','com') === 'cn') $form_params = array_add($form_params, 'resource', Constants::REST_ENDPOINT_21V);
+            if (Tool::config('app_type', 'com') === 'cn') {
+                $form_params = array_add($form_params, 'resource',
+                    Constants::REST_ENDPOINT_21V);
+            }
             $response = $client->post($this->access_token_url, [
                 'form_params' => $form_params,
             ]);
             $token = json_decode($response->getBody()->getContents(), true);
             $access_token = $token['access_token'];
             $refresh_token = $token['refresh_token'];
-            $expires = $token['expires_in'] != 0 ? time() + $token['expires_in'] : 0;
+            $expires = $token['expires_in'] != 0 ? time() + $token['expires_in']
+                : 0;
             $data = [
-                'access_token' => $access_token,
-                'refresh_token' => $refresh_token,
-                'access_token_expires' => $expires
+                'access_token'         => $access_token,
+                'refresh_token'        => $refresh_token,
+                'access_token_expires' => $expires,
             ];
             $saved = Tool::updateConfig($data);
             $this->call('cache:clear');
-            if (!$saved) $this->error('Refresh Token Error');
+            if (!$saved) {
+                $this->error('Refresh Token Error');
+            }
+
             return;
         } catch (ClientException $e) {
             $this->error($e->getMessage());
@@ -123,6 +135,7 @@ class RefreshToken extends Command
      * Define the command's schedule.
      *
      * @param  \Illuminate\Console\Scheduling\Schedule $schedule
+     *
      * @return void
      */
     public function schedule(Schedule $schedule): void

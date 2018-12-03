@@ -35,7 +35,8 @@ class ConfigCache extends Command
     /**
      * Create a new config cache command instance.
      *
-     * @param  \Illuminate\Filesystem\Filesystem  $files
+     * @param  \Illuminate\Filesystem\Filesystem $files
+     *
      * @return void
      */
     public function __construct(Filesystem $files)
@@ -66,7 +67,8 @@ class ConfigCache extends Command
         } catch (Throwable $e) {
             $this->files->delete($configPath);
 
-            throw new LogicException('Your configuration files are not serializable.', 0, $e);
+            throw new LogicException('Your configuration files are not serializable.',
+                0, $e);
         }
 
         $this->info('Cached successfully!');
@@ -90,6 +92,7 @@ class ConfigCache extends Command
      * Define the command's schedule.
      *
      * @param  \Illuminate\Console\Scheduling\Schedule $schedule
+     *
      * @return void
      */
     public function schedule(Schedule $schedule): void

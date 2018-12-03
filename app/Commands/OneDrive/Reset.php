@@ -29,7 +29,7 @@ class Reset extends Command
     public function handle()
     {
         if ($this->option('force')) {
-           return $this->reset();
+            return $this->reset();
         } else {
             if ($this->confirm('Reset will erase all data, continue?')) {
                 return $this->reset();
@@ -43,7 +43,8 @@ class Reset extends Command
     public function reset()
     {
         $this->call('cache:clear');
-        copy(storage_path('app/config.sample.json'), storage_path('app/config.json'));
+        copy(storage_path('app/config.sample.json'),
+            storage_path('app/config.json'));
         $this->info('Reset Completed！');
     }
 
@@ -51,6 +52,7 @@ class Reset extends Command
      * Define the command's schedule.
      *
      * @param  \Illuminate\Console\Scheduling\Schedule $schedule
+     *
      * @return void
      */
     public function schedule(Schedule $schedule): void

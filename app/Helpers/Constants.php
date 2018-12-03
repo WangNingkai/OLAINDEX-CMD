@@ -4,11 +4,13 @@ namespace App\Helpers;
 
 /**
  * Class Constants
+ *
  * @package App\Helpers
  */
 class Constants
 {
-    const LOGO = <<<EOF
+    const LOGO
+        = <<<EOF
    ____  __    ___    _____   ______  _______  __      ________  _______ 
   / __ \/ /   /   |  /  _/ | / / __ \/ ____/ |/ /     / ____/  |/  / __ \
  / / / / /   / /| |  / //  |/ / / / / __/  |   /_____/ /   / /|_/ / / / /

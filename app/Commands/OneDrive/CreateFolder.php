@@ -34,16 +34,18 @@ class CreateFolder extends Command
         $name = $this->argument('name');
         $remote = $this->argument('remote');
         $graphPath = Tool::getRequestPath($remote);
-        $result =  OneDrive::mkdirByPath($name,$graphPath);
+        $result = OneDrive::mkdirByPath($name, $graphPath);
         $response = OneDrive::responseToArray($result);
         $this->call('cache:clear');
-        $response['code'] === 200 ? $this->info("Folder Created!") : $this->warn("Failed!\n{$response['msg']} ");
+        $response['code'] === 200 ? $this->info("Folder Created!")
+            : $this->warn("Failed!\n{$response['msg']} ");
     }
 
     /**
      * Define the command's schedule.
      *
      * @param  \Illuminate\Console\Scheduling\Schedule $schedule
+     *
      * @return void
      */
     public function schedule(Schedule $schedule): void

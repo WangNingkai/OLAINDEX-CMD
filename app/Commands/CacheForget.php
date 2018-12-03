@@ -32,7 +32,8 @@ class CacheForget extends Command
     /**
      * Create a new cache clear command instance.
      *
-     * @param  \Illuminate\Cache\CacheManager  $cache
+     * @param  \Illuminate\Cache\CacheManager $cache
+     *
      * @return void
      */
     public function __construct(CacheManager $cache)
@@ -53,13 +54,15 @@ class CacheForget extends Command
             $this->argument('key')
         );
 
-        $this->info('The ['.$this->argument('key').'] key has been removed from the cache.');
+        $this->info('The ['.$this->argument('key')
+            .'] key has been removed from the cache.');
     }
 
     /**
      * Define the command's schedule.
      *
      * @param  \Illuminate\Console\Scheduling\Schedule $schedule
+     *
      * @return void
      */
     public function schedule(Schedule $schedule): void

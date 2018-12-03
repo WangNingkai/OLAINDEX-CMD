@@ -35,27 +35,30 @@ class Offline extends Command
         $response = OneDrive::responseToArray($result);
         if ($response['code'] === 200) {
             $redirect = array_get($response, 'data.redirect');
-            $this->info('progress link: ' . $redirect);
+            $this->info('progress link: '.$redirect);
             $done = false;
             while (!$done) {
-                $content = OneDrive::request('get', $redirect,'',true)->getBody()->getContents();
+                $content = OneDrive::request('get', $redirect, '', true)
+                    ->getBody()->getContents();
                 $result = OneDrive::responseToArray($content);
                 $status = array_get($result, 'status');
                 if ($status === 'failed') {
                     $this->error(array_get($result, 'error.message'));
                     $done = true;
                 } elseif ($status === 'inProgress') {
-                    $this->info('Progress: ' . array_get($result, 'percentageComplete'));
+                    $this->info('Progress: '.array_get($result,
+                            'percentageComplete'));
                     sleep(3);
                     $done = false;
                 } elseif ($status === 'completed') {
-                    $this->info('Progress: ' . array_get($result, 'percentageComplete'));
+                    $this->info('Progress: '.array_get($result,
+                            'percentageComplete'));
                     $done = true;
                 } elseif ($status === 'notStarted') {
-                    $this->error('Status:' . $status);
+                    $this->error('Status:'.$status);
                     $done = false;
                 } else {
-                    $this->error('Status:' . $status);
+                    $this->error('Status:'.$status);
                     $done = true;
                 }
             }
@@ -68,6 +71,7 @@ class Offline extends Command
      * Define the command's schedule.
      *
      * @param  \Illuminate\Console\Scheduling\Schedule $schedule
+     *
      * @return void
      */
     public function schedule(Schedule $schedule): void

@@ -31,25 +31,27 @@ class Quota extends Command
     public function handle()
     {
         $this->call('refresh:token');
-        $data = Cache::remember('one:quota', Tool::config('cache_expires'), function () {
-            $response = OneDrive::getDrive();
-            $result = OneDrive::responseToArray($response);
-            if ($result['code'] === 200) {
-                $quota = array_get($result, 'data.quota');
-                foreach ($quota as $k => $item) {
-                    if (!is_string($item)) {
-                        $quota[$k] = Tool::convertSize($item);
+        $data = Cache::remember('one:quota', Tool::config('cache_expires'),
+            function () {
+                $response = OneDrive::getDrive();
+                $result = OneDrive::responseToArray($response);
+                if ($result['code'] === 200) {
+                    $quota = array_get($result, 'data.quota');
+                    foreach ($quota as $k => $item) {
+                        if (!is_string($item)) {
+                            $quota[$k] = Tool::convertSize($item);
+                        }
                     }
+
+                    return $quota;
+                } else {
+                    return [];
                 }
-                return $quota;
-            } else {
-                return [];
-            }
-        });
+            });
         $headers = array_keys(is_array($data) ? $data : []);
         $quota[] = $data;
         $this->info(Constants::LOGO);
-        $this->info('App Version  [' . Tool::config('app_version') . ']');
+        $this->info('App Version  ['.Tool::config('app_version').']');
         $this->table($headers, $quota, 'default');
     }
 
@@ -57,6 +59,7 @@ class Quota extends Command
      * Define the command's schedule.
      *
      * @param  \Illuminate\Console\Scheduling\Schedule $schedule
+     *
      * @return void
      */
     public function schedule(Schedule $schedule): void

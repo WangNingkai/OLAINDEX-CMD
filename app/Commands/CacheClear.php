@@ -44,6 +44,7 @@ class CacheClear extends Command
      *
      * @param  \Illuminate\Cache\CacheManager $cache
      * @param  \Illuminate\Filesystem\Filesystem $files
+     *
      * @return void
      */
     public function __construct(CacheManager $cache, Filesystem $files)
@@ -71,6 +72,7 @@ class CacheClear extends Command
 
         if (!$successful) {
             $this->error('Failed to clear cache. Make sure you have the appropriate permissions.');
+
             return;
         }
 
@@ -88,7 +90,9 @@ class CacheClear extends Command
      */
     public function flushFacades()
     {
-        if (!$this->files->exists($storagePath = storage_path('framework/cache'))) {
+        if (!$this->files->exists(
+            $storagePath = storage_path('framework/cache'))
+        ) {
             return;
         }
 
@@ -130,7 +134,11 @@ class CacheClear extends Command
     protected function getArguments()
     {
         return [
-            ['store', InputArgument::OPTIONAL, 'The name of the store you would like to clear'],
+            [
+                'store',
+                InputArgument::OPTIONAL,
+                'The name of the store you would like to clear',
+            ],
         ];
     }
 
@@ -142,7 +150,13 @@ class CacheClear extends Command
     protected function getOptions()
     {
         return [
-            ['tags', null, InputOption::VALUE_OPTIONAL, 'The cache tags you would like to clear', null],
+            [
+                'tags',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'The cache tags you would like to clear',
+                null,
+            ],
         ];
     }
 
@@ -150,6 +164,7 @@ class CacheClear extends Command
      * Define the command's schedule.
      *
      * @param  \Illuminate\Console\Scheduling\Schedule $schedule
+     *
      * @return void
      */
     public function schedule(Schedule $schedule): void

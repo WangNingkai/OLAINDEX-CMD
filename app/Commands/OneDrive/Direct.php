@@ -31,17 +31,22 @@ class Direct extends Command
         $this->call('refresh:token');
         $this->info('Please waiting...');
         $remote = $this->argument('remote');
-        $_remote = OneDrive::responseToArray(OneDrive::pathToItemId(Tool::getRequestPath($remote)));
-        $remote_id = $_remote['code'] === 200 ? array_get($_remote, 'data.id') : exit('Remote Path Abnormal');
+        $_remote
+            = OneDrive::responseToArray(OneDrive::pathToItemId(Tool::getRequestPath($remote)));
+        $remote_id = $_remote['code'] === 200 ? array_get($_remote, 'data.id')
+            : exit('Remote Path Abnormal');
         $share = OneDrive::createShareLink($remote_id);
         $response = OneDrive::responseToArray($share);
-        $response['code'] === 200 ? $this->info("Success! Direct Link:\n{$response['data']['redirect']}") : $this->warn("Failed!\n{$response['msg']} ");
+        $response['code'] === 200
+            ? $this->info("Success! Direct Link:\n{$response['data']['redirect']}")
+            : $this->warn("Failed!\n{$response['msg']} ");
     }
 
     /**
      * Define the command's schedule.
      *
      * @param  \Illuminate\Console\Scheduling\Schedule $schedule
+     *
      * @return void
      */
     public function schedule(Schedule $schedule): void
