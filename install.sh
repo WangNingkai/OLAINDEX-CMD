@@ -3,6 +3,11 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/local/php
 export PATH
 
 #=================================================
+#     ____  __    ___   ________  _______
+#    / __ \/ /   /   | / ____/  |/  / __ \
+#   / / / / /   / /| |/ /   / /|_/ / / / /
+#  / /_/ / /___/ ___ / /___/ /  / / /_/ /
+#  \____/_____/_/  |_\____/_/  /_/_____/
 #	System Required: CentOS/Debian/Ubuntu
 #	Description: OLAINDEX-CMD
 #	Author: WangNingkai
