@@ -28,8 +28,9 @@ $app->setLogo("
 \____/_____/_/  |_\____/_/  /_/_____/
 ", 'success');
 
-$app->addCommand(\App\Commands\AppCommand::class);
+$app->registerCommands('\App\\Commands', dirname(__DIR__) . '/app/Commands');
+$app->registerGroups('\App\\Controllers', dirname(__DIR__) . '/app/Controllers');
 
-//$app->addController(\Inhere\Console\BuiltIn\PharController::class);
+$app->controller(\Inhere\Console\BuiltIn\PharController::class);
 // run
 $app->run();

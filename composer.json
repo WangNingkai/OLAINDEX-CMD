@@ -20,13 +20,13 @@
         }
     ],
     "require": {
-        "php": "^7.1.3",
+        "php": ">=7.2",
         "microsoft/microsoft-graph": "^1.13",
         "php-curl-class/php-curl-class": "^8.0",
-        "hashids/hashids": "^4.0",
         "nette/finder": "^2.5",
         "tightenco/collect": "^7.12",
-        "inhere/console": "^3.1"
+        "inhere/console": "^3.1",
+        "monolog/monolog": "^2.1"
     },
     "autoload": {
         "psr-4": {

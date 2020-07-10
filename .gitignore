@@ -5,3 +5,4 @@
 /public/storage
 /public/favicon.ico
 .env
+/runtime
