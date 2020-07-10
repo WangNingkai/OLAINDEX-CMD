@@ -14,6 +14,7 @@ $compiler
         'demo',
         'test',
         'tmp',
+        'runtime'
     ])
     ->addFile([
         'LICENSE',
