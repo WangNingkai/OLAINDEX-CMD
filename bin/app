@@ -1,0 +1,35 @@
+#!/usr/bin/env php
+<?php
+/**
+ * This file is part of the wangningkai/olaindex-cmd.
+ * (c) wangningkai <i@ningkai.wang>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+require dirname(__DIR__) . '/config/bootstrap.php';
+
+// create app instance
+$app = new \Inhere\Console\Application([
+    'name' => 'OLAINDEX',
+    'description' => '✨ Another OneDrive Command Line Client.',
+    'version' => '1.0.0',
+    'publishAt' => '2020.01.01',
+    'updateAt' => '2020.07.10',
+    'debug' => false,
+    'rootPath' => dirname(__DIR__),
+]);
+
+$app->setLogo("
+   ____  __    ___   ________  _______
+  / __ \/ /   /   | / ____/  |/  / __ \
+ / / / / /   / /| |/ /   / /|_/ / / / /
+/ /_/ / /___/ ___ / /___/ /  / / /_/ /
+\____/_____/_/  |_\____/_/  /_/_____/
+", 'success');
+
+$app->addCommand(\App\Commands\AppCommand::class);
+
+//$app->addController(\Inhere\Console\BuiltIn\PharController::class);
+// run
+$app->run();

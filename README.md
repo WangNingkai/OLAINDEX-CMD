@@ -2,24 +2,7 @@
 
 🍀 Another OneDrive Command Line Client.
 
-Based on [Laravel-Zero](https://laravel-zero.com) , with lots of modifications.
-
-This is very much a copycat of [onedrivecmd](https://github.com/cnbeining/onedrivecmd) , but in different language.
-
 OLAINDEX-CMD is a console version of OLAINDEX.
-
-## Server Requirements
-
-- PHP >= 7.1.3
-- OpenSSL PHP Extension
-- PDO PHP Extension
-- Mbstring PHP Extension
-- Tokenizer PHP Extension
-- XML PHP Extension
-- Ctype PHP Extension
-- JSON PHP Extension
-- BCMath PHP Extension
-- Fileinfo PHP Extension
 
 ## Proeject
 

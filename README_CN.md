@@ -2,26 +2,9 @@
 
 🍀 另一个OneDrive命令行客户端.
 
-基于 [Laravel-Zero](https://laravel-zero.com) ， 并加入很多修改。
-
-本项目参考了 [onedrivecmd](https://github.com/cnbeining/onedrivecmd) ， 但是语言基于 PHP，毕竟 PHP 是世界上最好的语言。
-
 OLAINDEX-CMD 是命令行版的 OLAINDEX.
 
-## 服务器要求
-
-- PHP >= 7.1.3
-- PHP OpenSSL 扩展
-- PHP PDO 扩展
-- PHP Mbstring 扩展
-- PHP Tokenizer 扩展
-- PHP XML 扩展
-- PHP Ctype 扩展
-- PHP JSON 扩展
-- PHP BCMath 扩展
-- PHP Fileinfo 扩展 
-
-## Github
+## 项目地址
 
 - 项目地址 : [https://github.com/WangNingkai/OLAINDEX-CMD](https://github.com/WangNingkai/OLAINDEX-CMD)
 
